@@ -4,9 +4,9 @@ import unittest
 
 from PGC.Configuration import Configuration
 from PGC.Generator import Generator
-from PGC.Graph import Graph
+from PGC.Graph.Graph import Graph
 from PGC.Production import Production
-from PGC.Vertex import Vertex
+from PGC.Graph.Vertex import Vertex
 
 class TestGenerator(unittest.TestCase):
 

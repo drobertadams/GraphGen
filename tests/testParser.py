@@ -2,7 +2,7 @@ import unittest
 
 from PGC.Lexer import Lexer
 from PGC.Parser import Parser
-from PGC.Graph import Graph
+from PGC.Graph.Graph import Graph
 
 #------------------------------------------------------------------------------
 class TestParser(unittest.TestCase):

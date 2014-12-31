@@ -6,7 +6,7 @@ import sys
 
 from PGC.Parser import Parser
 from PGC.Lexer import Lexer
-from PGC.Vertex import Vertex
+from PGC.Graph.Vertex import Vertex
 
 class Generator(object):
     """
