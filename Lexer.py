@@ -10,18 +10,17 @@ class Lexer(object):
         """Constructor.
            str is the input to the lexer
         """
-        self.input = str            # input string
-        self.p = 0                  # index of current character within self.input
-
-        # Initialize the current character (EOF if we're given an empty string).
+        self.input = str    # input string
+        self.p = 0          # index of current character within self.input
+        self.lineNum = 1    # current line number
+        self.charNum = 1    # current character number within the line
+ 
+        # Initialize the current character (self.c)
         if len(str) != 0:
-            self.c = self.input[self.p] # current character
+            self.c = self.input[self.p]
         else:
             self.c = TokenTypes.EOF
-            
-        self.lineNum = 1            # current line number
-        self.charNum = 1            # current character number within the line
-                
+               
     def nextToken(self):
         """Return the next Token in the input stream, ignoring whitespace."""
         while self.c != TokenTypes.EOF:

@@ -17,18 +17,22 @@ grown to a given size).
 
 ## Implementation
 
-The tool is consists of a parser that reads the grammar input file, and a 
+The tool consists of a parser that reads the grammar input file, and a 
 "generator" that actually applies the productions/transformations to
-"generate" a Net.
+"generate" a Net. Underlying everything is a Graph object that represents a 
+directed graph and can perform subgraph (isomorphic) searches.
 
 ### Parser Tool Implementation
 
-Parser
-Lexer
-Token
-Production
-Productions
-Configuration
+The grammar parser is implemented as a traditional top-down recursive descent
+parser and associated lexer. Classes include:
+
+- Token - a simple representation of a token with type and lexeme
+- Lexer - converts the input character stream into a stream of Tokens
+- Parser
+- Production
+- Productions
+- Configuration
 
 ### Generator Tool Implementation
 
