@@ -29,13 +29,35 @@ parser and associated lexer. Classes include:
 
 - Token - a simple representation of a token with type and lexeme
 - Lexer - converts the input character stream into a stream of Tokens
-- Parser
-- Production
-- Productions
+- Parser - reads the input Token stream from the Lexer and builds a 
+	Configuration object to guide the Generator, and a list of Productions for
+	the Generator to use. A sample grammar is given below:
+
+		# Sample Grammar File
+
+		configuration {
+			max_states = 10;
+		}
+
+		productions {
+			# Start graph.
+			A;
+
+			# Productions
+			A ==> A -> B;
+			A -> B ==> A -> B, A -> C;
+			A -> C ==> C -> A;
+		}
+		
 - Configuration
+- Production
+
+- Productions - unused?
 
 ### Generator Tool Implementation
 
 Generator
+
+### Graph Implementation
 
 Graph/ contains an implementation

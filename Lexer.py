@@ -6,6 +6,7 @@ class Lexer(object):
     Lexer for the graph productions parser.
     """
     
+    #--------------------------------------------------------------------------
     def __init__(self, str):
         """Constructor.
            str is the input to the lexer
@@ -21,6 +22,7 @@ class Lexer(object):
         else:
             self.c = TokenTypes.EOF
                
+    #--------------------------------------------------------------------------
     def nextToken(self):
         """Return the next Token in the input stream, ignoring whitespace."""
         while self.c != TokenTypes.EOF:
@@ -91,6 +93,9 @@ class Lexer(object):
                 self._error()
         return Token(TokenTypes.EOF, "<EOF>")
 
+    #--------------------------------------------------------------------------
+    # PRIVATE METHODS - These aren't the methods you're looking for.
+    #--------------------------------------------------------------------------
     def _consume(self):
         """Advance to the next character of input, or EOF."""
         # Update line number and character number.
@@ -107,6 +112,7 @@ class Lexer(object):
         else:
             self.c = self.input[self.p]
 
+    #--------------------------------------------------------------------------
     def _error(self):
         """Raises an exception indicating that the current character is
            invalid.

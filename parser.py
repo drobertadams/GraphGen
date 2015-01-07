@@ -9,51 +9,70 @@ from Token import Token
 from Graph.Graph import Graph
 from Graph.Vertex import Vertex
    
-class Parser(object):
-    """Graph productions parser."""
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
+class Parser(object):
+    """
+    Graph productions parser.
+    """
+
+    #--------------------------------------------------------------------------
     def __init__(self, lexer):
         """
         Constructor.
         Inputs: lexer -- instance of the Lexer class
         Outputs: N/A
         """
-
         self.lexer = lexer
-        self.lookahead = self.lexer.nextToken()
-        self.config = {}
+        self.lookahead = self.lexer.nextToken() # next token
+        self.config = {} # configuration section of the input
         self.productions = [] # array of Production objects
-        self.startGraph = None
+        self.startGraph = None # starting graph
 
+        # As we are parsing a graph, we keep track of the number
+        # of vertices parsed so far.
         self._numVerticesParsed = 0
          
+    #--------------------------------------------------------------------------
     def parse(self):
         """grammar_file -> configuration productions."""
         self._parseConfiguration()
         self._parseProductionuctions()
 
+    #--------------------------------------------------------------------------
+    # PRIVATE METHODS - These aren't the methods you're looking for.
+    #--------------------------------------------------------------------------
     def _consume(self):
-        """Moves to the next token."""
+        """
+        Consumes the current token and advances to the next.
+        """
         self.lookahead = self.lexer.nextToken()
         
+    #--------------------------------------------------------------------------
     def _error(self, str):
-        """Raises an error message about expecting <str> but found current token
-           on the current line number."""
+        """
+        Raises an error message about expecting str but found current token
+        on the current line number.
+        """
         raise SyntaxError("Expecting %s found %s on line %d" % \
             (str, self.lookahead, self.lexer.lineNum))
 
-    def _match(self, token):
-        """Ensures the current token is of type token. token should be an
-           integer from lexer.TokenTypes. If it is, advances to the next token
-           and returns the token just previously matched.
+    #--------------------------------------------------------------------------
+    def _match(self, tokenType):
         """
-        if self.lookahead.type == token:
+        If the type of the current token type matches the given tokenType,
+        advance to the next token, otherwise, raise an error.
+        Inputs: tokenType is an integer from lexer.TokenTypes
+        Outputs: current token (the one just consumed)
+        """
+        if self.lookahead.type == tokenType:
             oldToken = self.lookahead
             self._consume()
             return oldToken
         else:
-            self._error(TokenTypes.names[token])
+            self._error(TokenTypes.names[tokenType])
 
+    #--------------------------------------------------------------------------
     def _parseConfig(self):
         """config -> ID '=' (ID | NUMBER)"""
         key = self._match(TokenTypes.ID)
@@ -68,12 +87,14 @@ class Parser(object):
         # Store the <key,value> pair in the Configuration.
         self.config[key.text] = value.text
 
+    #--------------------------------------------------------------------------
     def _parseConfigList(self):
         """config_list -> config ';' config_list | nil"""
         while self.lookahead.type == TokenTypes.ID:
             self._parseConfig()
             self._match(TokenTypes.SEMICOLON)
 
+    #--------------------------------------------------------------------------
     def _parseConfiguration(self):
         """configuration -> 'configuration' '{' config_list '}'"""
         self._match(TokenTypes.CONFIGURATION)
@@ -81,6 +102,7 @@ class Parser(object):
         self._parseConfigList()
         self._match(TokenTypes.RBRACE)
 
+    #--------------------------------------------------------------------------
     def _parseEdgeList(self, graph):
         """edgeList -> ID | ID '->' edgeList
            Parses the list of vertex IDs and adds them as nodes to the given
@@ -124,6 +146,7 @@ class Parser(object):
 
             currentVertex = nextVertex
 
+    #--------------------------------------------------------------------------
     def _parseGraph(self):
         """graph -> edgeList | edgeList ',' graph
            Parses, builds, and returns a Graph object.
@@ -136,6 +159,7 @@ class Parser(object):
             self._parseEdgeList(g)
         return g
 
+    #--------------------------------------------------------------------------
     def _parseProduction(self):
         """prod -> graph '==>' graph"""
         lhs = self._parseGraph()
@@ -143,12 +167,14 @@ class Parser(object):
         rhs = self._parseGraph()
         self.productions.append( Production(lhs, rhs) )
        
+    #--------------------------------------------------------------------------
     def _parseProductionList(self):
         """prod_list -> prod ';' prod_list | nil"""
         while self.lookahead.type == TokenTypes.ID:
             self._parseProduction()
             self._match(TokenTypes.SEMICOLON)
 
+    #--------------------------------------------------------------------------
     def _parseProductionuctions(self):
         """productions -> 'productions' '{' start_graph prod_list '}'"""
         self._match(TokenTypes.PRODUCTIONS)
@@ -157,9 +183,8 @@ class Parser(object):
         self._parseProductionList()
         self._match(TokenTypes.RBRACE)
 
+    #--------------------------------------------------------------------------
     def _parseStartGraph(self):
         """start_graph -> state_list ';'"""
         self.startGraph = self._parseGraph()
         self._match(TokenTypes.SEMICOLON)
-
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
