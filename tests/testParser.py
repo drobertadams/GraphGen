@@ -4,6 +4,7 @@ from PGC.Lexer import Lexer
 from PGC.Token import TokenTypes
 from PGC.Parser import Parser
 from PGC.Graph.Graph import Graph
+from PGC.Graph.Graph import Vertex
 
 # TODO - Testing
 # parse
@@ -12,7 +13,6 @@ from PGC.Graph.Graph import Graph
 #     _parseProductionsList
 #       _parseProduction
 #         _parseGraph
-#           _parseEdgeList
 
 #------------------------------------------------------------------------------
 class TestParser(unittest.TestCase):
@@ -127,6 +127,43 @@ class TestParser(unittest.TestCase):
         p._parseConfiguration()
         self.assertEquals(p.config['A'], 'B')
 
+    def testParseEdgeList(self):
+        # edgeList -> ID | ID '->' edgeList
+
+        # Left off first required ID.
+        p = Parser(Lexer(''))
+        g = Graph()
+        self.assertRaises(SyntaxError, p._parseEdgeList, g)
+
+        # Using non-existing label should create a new vertex.
+        g = Graph()
+        p = Parser( Lexer('A') )
+        p._parseEdgeList(g)
+        self.assertEqual(g._vertices['v0'].label, 'A')
+
+        # Using an existing label should not create a new vertex.
+        g = Graph()
+        g.addVertex( Vertex('u0', 'A') )
+        p = Parser( Lexer('A') )
+        p._parseEdgeList(g)
+        self.assertEqual(g._vertices['u0'].label, 'A')
+
+        # Left off second ID.
+        p = Parser(Lexer('A ->'))
+        g = Graph()
+        self.assertRaises(SyntaxError, p._parseEdgeList, g)
+
+        # Simple transition should create two vertices and connect them.
+        g = Graph()
+        p = Parser(Lexer('A -> B'))
+        p._parseEdgeList(g)
+        self.assertEquals(len(g._vertices), 2)
+        self.assertEquals(g._vertices['v0'].label, 'A')
+        self.assertEquals(g._vertices['v1'].label, 'B')
+        self.assertEquals(g._edges['v0'][0].label, 'B')
+
+
+
 
 
 
@@ -164,7 +201,6 @@ class TestParser(unittest.TestCase):
             self.assertEquals(len(p.config), 2)
             self.assertTrue(p.startGraph is not None)
             self.assertEquals(len(p.productions), 3)
-
 
     def testParseProd(self):
             """prod -> state_list '==>' state_list"""
@@ -241,38 +277,6 @@ class TestParser(unittest.TestCase):
             self.assertEquals(len(g._edges[a.id]), 2)
             self.assertEquals(g._edges[a.id][0].id, b.id)
             self.assertEquals(g._edges[a.id][1].id, c.id)
-
-    def testParseEdgeList(self):
-            """edgeList -> ID | ID '->' edgeList."""
-
-            # Left off first ID.
-            p = Parser(Lexer('->'))
-            g = Graph()
-            self.assertRaises(SyntaxError, p._parseEdgeList, g)
-
-            # Left off second ID.
-            p = Parser(Lexer('A ->'))
-            g = Graph()
-            self.assertRaises(SyntaxError, p._parseEdgeList, g)
-
-            # Simple label.
-            p = Parser(Lexer('A'))
-            g = Graph()
-            p._parseEdgeList(g)
-            self.assertEquals(len(g.vertices), 1)
-            a = g.findVertexWithLabel('A')
-            self.assertTrue(a is not None)
-
-            # Simple transition.
-            p = Parser(Lexer('A -> B'))
-            g = Graph()
-            p._parseEdgeList(g)
-            self.assertEquals(len(g.vertices), 2)
-            a = g.findVertexWithLabel('A')
-            self.assertTrue(a is not None)
-            b = g.findVertexWithLabel('B')
-            self.assertTrue(b is not None)
-            self.assertEquals('B', g._edges[a.id][0].label)
 
 if __name__ == '__main__':
     unittest.main()

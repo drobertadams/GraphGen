@@ -104,45 +104,55 @@ class Parser(object):
 
     #--------------------------------------------------------------------------
     def _parseEdgeList(self, graph):
-        """edgeList -> ID | ID '->' edgeList
-           Parses the list of vertex IDs and adds them as nodes to the given
-           graph. This parses sentences of the form A->B->C->... The list of 
-           IDs in the input are assumed to be vertex labels, not unique
-           vertex IDs.
-           Inputs: graph(Graph) - graph to add vertices to
-           Outputs: none
+        """
+        edgeList -> ID | ID '->' edgeList
+
+        An edgeList represents a set of graph nodes connected with directed
+        edges. In an edgeList ID is actually the label to be applied to
+        a given vertex. So A->B represents two vertices with labels "A" and
+        "B" respectively, connected by an edge from A to B.
+
+        This method reads a list of labels (ID) and edges and adds them to
+        the given graph. If the graph already has a vertex with the given
+        label, the existing vertex is used intead.
+
+        If new vertices are added they are given a unique id of "vN" where
+        N is the next available vertex number (starting with 0).
+
+       Inputs: graph - Graph to add vertices to
+       Outputs: none
         """
 
         currentVertexToken = self._match(TokenTypes.ID)
         currentVertex = graph.findVertexWithLabel(currentVertexToken.text)
         if currentVertex == None:
+            # graph doesn't contain a vertex with the label.
             currentVertex = Vertex(
                 'v%d' % graph.numVertices, # vertex id
-#                'v%d' % self._numVerticesParsed, # vertex id
-                currentVertexToken.text          # vertex label
+                currentVertexToken.text    # vertex label
             )
-            #self._numVerticesParsed = self._numVerticesParsed + 1
             graph.addVertex(currentVertex)
-            logging.debug('Created vertex %s' % str(currentVertex))
-            logging.debug('graph now has %d vertices' % graph.numVertices)
+            #logging.debug('Created vertex %s' % str(currentVertex))
+            #logging.debug('graph now has %d vertices' % graph.numVertices)
 
         while self.lookahead.type == TokenTypes.ARROW:
             self._match(TokenTypes.ARROW)
 
+            # Parse the next vertex in the input, creating a new vertex
+            # if needed.
             nextVertexToken = self._match(TokenTypes.ID)
             nextVertex = graph.findVertexWithLabel(nextVertexToken.text)
             if nextVertex == None:
                 nextVertex = Vertex(
                     'v%d' % graph.numVertices, # vertex id
-#                    'v%d' % self._numVerticesParsed, # vertex id
-                    nextVertexToken.text             # vertex label
+                    nextVertexToken.text       # vertex label
                 )
-                #self._numVerticesParsed = self._numVerticesParsed + 1
                 graph.addVertex(nextVertex)
-                logging.debug('Created vertex %s' % str(nextVertex))
+                #logging.debug('Created vertex %s' % str(nextVertex))
 
+            # Connect the first vertex we read with the second one.
             graph.addEdge(currentVertex, nextVertex)
-            logging.debug('Linked %s and %s' % (currentVertex, nextVertex))
+            #logging.debug('Linked %s and %s' % (currentVertex, nextVertex))
 
             currentVertex = nextVertex
 
