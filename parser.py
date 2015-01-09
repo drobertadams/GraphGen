@@ -37,7 +37,7 @@ class Parser(object):
     def parse(self):
         """grammar_file -> configuration productions."""
         self._parseConfiguration()
-        self._parseProductionuctions()
+        self._parseProductions()
 
     #--------------------------------------------------------------------------
     # PRIVATE METHODS - These aren't the methods you're looking for.
@@ -74,7 +74,12 @@ class Parser(object):
 
     #--------------------------------------------------------------------------
     def _parseConfig(self):
-        """config -> ID '=' (ID | NUMBER)"""
+        """
+        config -> ID '=' (ID | NUMBER)
+        
+        
+        A config is a simple name/value pair.
+        """
         key = self._match(TokenTypes.ID)
         self._match(TokenTypes.EQUALS)
         if self.lookahead.type == TokenTypes.ID:
@@ -89,14 +94,24 @@ class Parser(object):
 
     #--------------------------------------------------------------------------
     def _parseConfigList(self):
-        """config_list -> config ';' config_list | nil"""
+        """
+        config_list -> config ';' config_list | nil
+        
+        A list of zero or more configuration statements.
+        """
         while self.lookahead.type == TokenTypes.ID:
             self._parseConfig()
             self._match(TokenTypes.SEMICOLON)
 
     #--------------------------------------------------------------------------
     def _parseConfiguration(self):
-        """configuration -> 'configuration' '{' config_list '}'"""
+        """
+        configuration -> 'configuration' '{' config_list '}'
+        
+        The configuration section of the input file. Consists of a
+        'configuration' keyword, and then a list of configuration statements
+        surrounded by curly braces.
+        """
         self._match(TokenTypes.CONFIGURATION)
         self._match(TokenTypes.LBRACE)
         self._parseConfigList()
@@ -119,8 +134,8 @@ class Parser(object):
         If new vertices are added they are given a unique id of "vN" where
         N is the next available vertex number (starting with 0).
 
-       Inputs: graph - Graph to add vertices to
-       Outputs: none
+        Inputs: graph - Graph to add vertices to
+        Outputs: none
         """
 
         currentVertexToken = self._match(TokenTypes.ID)
@@ -158,10 +173,16 @@ class Parser(object):
 
     #--------------------------------------------------------------------------
     def _parseGraph(self):
-        """graph -> edgeList | edgeList ',' graph
-           Parses, builds, and returns a Graph object.
         """
-        logging.debug('parsing new graph')
+        graph -> edgeList | edgeList ',' graph
+
+        An edgeList represents a connected path of vertices. A "graph" is
+        a comma-separated list of such paths. This method builds a graph
+        from the given representation.
+        Input: none
+        Output: Graph build from the incoming list of edgeLists
+        """
+        #logging.debug('parsing new graph')
         g = Graph()
         self._parseEdgeList(g)
         while self.lookahead.type == TokenTypes.COMMA:
@@ -171,7 +192,12 @@ class Parser(object):
 
     #--------------------------------------------------------------------------
     def _parseProduction(self):
-        """prod -> graph '==>' graph"""
+        """
+        prod -> graph '==>' graph
+
+        A production defines a transformation taking one graph (on the LHS)
+        and transforming it to a different graph (RHS).
+        """
         lhs = self._parseGraph()
         self._match(TokenTypes.DOUBLEARROW)
         rhs = self._parseGraph()
@@ -179,14 +205,24 @@ class Parser(object):
        
     #--------------------------------------------------------------------------
     def _parseProductionList(self):
-        """prod_list -> prod ';' prod_list | nil"""
+        """
+        prod_list -> prod ';' prod_list | nil
+        
+        A list of zero or more productions separated by semicolons.
+        """
         while self.lookahead.type == TokenTypes.ID:
             self._parseProduction()
             self._match(TokenTypes.SEMICOLON)
 
     #--------------------------------------------------------------------------
-    def _parseProductionuctions(self):
-        """productions -> 'productions' '{' start_graph prod_list '}'"""
+    def _parseProductions(self):
+        """
+        productions -> 'productions' '{' start_graph prod_list '}'
+
+        The productions section of the input file. Consists of a
+        'productions' keyword, and then a start graph and list of production 
+        statements surrounded by curly braces.
+        """
         self._match(TokenTypes.PRODUCTIONS)
         self._match(TokenTypes.LBRACE)
         self._parseStartGraph()
@@ -195,6 +231,11 @@ class Parser(object):
 
     #--------------------------------------------------------------------------
     def _parseStartGraph(self):
-        """start_graph -> state_list ';'"""
+        """
+        start_graph -> graph ';'
+
+        A simple graph that the generator will use to initialize the
+        starting graphs.
+        """
         self.startGraph = self._parseGraph()
         self._match(TokenTypes.SEMICOLON)
