@@ -2,16 +2,20 @@ import logging
 import sys
 import unittest
 
-from PGC.Configuration import Configuration
 from PGC.Generator import Generator
 from PGC.Graph.Graph import Graph
 from PGC.Production import Production
 from PGC.Graph.Vertex import Vertex
 
+# TODO: Test Call Graph
+# applyProductions
+#   findMatchingProductions
+#   _applyProduction
+
 class TestGenerator(unittest.TestCase):
 
     #--------------------------------------------------------------------------
-    def testFindMatchingProductions(self):
+    def XXXtestFindMatchingProductions(self):
         # Build a basic A->B, A->C graph.
         g = Graph()
         g.addEdge(Vertex('v1', 'A'), Vertex('v2', 'B'))
@@ -36,12 +40,12 @@ class TestGenerator(unittest.TestCase):
         
     #--------------------------------------------------------------------------
 # TODO
-    def testApplyProductions(self):
+    def XXXtestApplyProductions(self):
         # Test applyProductions(self, startGraph, productions, config):
         self.assertTrue(True)
 
    #--------------------------------------------------------------------------
-    def testApplyProduction_NoChange(self):
+    def XXXtestApplyProduction_NoChange(self):
         # Check that if no changes are specified, no changes are made.
 
         # Basic graph with one vertex A.
@@ -65,13 +69,13 @@ class TestGenerator(unittest.TestCase):
         
     #--------------------------------------------------------------------------
 # TODO
-    def testApplyProduction(self):
+    def XXXtestApplyProduction(self):
         # Test complex change: add/delete edges, add/delete vertices.
 
         self.assertTrue(True)
  
     #--------------------------------------------------------------------------
-    def testAddNewEdges(self):
+    def XXXtestAddNewEdges(self):
         # Test that productions can add edges.
 
         # Basic graph with two unconnected vertices A and B.
@@ -96,7 +100,7 @@ class TestGenerator(unittest.TestCase):
         self.assertEquals(graph._edges['v0'][0].id, 'v1') # new edge between A and B
 
     #--------------------------------------------------------------------------
-    def testAddNewVertices(self):
+    def XXXtestAddNewVertices(self):
         # Test that productions can add vertices.
 
         # Basic graph with one vertex A.
@@ -122,7 +126,7 @@ class TestGenerator(unittest.TestCase):
         self.assertEquals(rhsMapping['u1'], 'v1') # rhs u1 mapped to graph v1
 
     #--------------------------------------------------------------------------
-    def testDeleteMissingEdges(self):
+    def XXXtestDeleteMissingEdges(self):
         # Test deleteMissingEdges(graph, production, lhsMapping, rhsMapping)
 
         # Build a graph A->B, A->C.
@@ -147,7 +151,7 @@ class TestGenerator(unittest.TestCase):
         self.assertFalse(graph.hasEdgeBetween('v0','v1')) # A no longer points to B
         
     #--------------------------------------------------------------------------
-    def testDeleteMissingVertices(self):
+    def XXXtestDeleteMissingVertices(self):
         # Test deleteMissingVertices(graph, production, lhsMapping)
 
         # Build a graph A->B
@@ -170,7 +174,7 @@ class TestGenerator(unittest.TestCase):
         self.assertTrue('v1' not in graph.vertices)
 
     #--------------------------------------------------------------------------
-    def testMapRHSToGraph(self):
+    def XXXtestMapRHSToGraph(self):
         # Test def _mapRHSToGraph(self, graph, production, lhsMapping):
 
         # Basic graph with one vertex A.

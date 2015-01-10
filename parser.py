@@ -1,7 +1,6 @@
 import logging
 import sys
 
-from Configuration import Configuration
 from Production import Production
 from Lexer import Lexer
 from Token import TokenTypes
@@ -89,7 +88,7 @@ class Parser(object):
         else:
             self._error("ID or NUMBER")
 
-        # Store the <key,value> pair in the Configuration.
+        # Store the <key,value> pair in the configuration.
         self.config[key.text] = value.text
 
     #--------------------------------------------------------------------------

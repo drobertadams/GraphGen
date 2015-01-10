@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# :vim:nowrap
 
 import logging
 import random
@@ -10,12 +11,13 @@ from PGC.Graph.Vertex import Vertex
 
 class Generator(object):
     """
-    Transformation engine for graphs. Given a set of productions of the
-    form lhs ==> rhs, and using a starting graph G, uses graph 
-    isomorphic searching to find instances of a lhs in G and replaces the lhs 
-    vertices with the rhs. The engine continues to apply these transformations 
-    until G contains a given number of vertices. This assumes that the productions
-    generally increase the number of vertices.
+
+    Transformation engine for graphs. Given a set of Productions of the form
+    lhs ==> rhs, and using a starting graph G, uses graph isomorphic searching
+    to find instances of a lhs in G and replaces the lhs vertices with the rhs.
+    The engine continues to apply these transformations until G contains a
+    given number of vertices. This assumes that the productions generally
+    increase the number of vertices.
 
     Usage: Either use the all-inclusive main() method which checks the 
     command-line arguments, or call applyProductions() yourself which
@@ -26,16 +28,14 @@ class Generator(object):
     #--------------------------------------------------------------------------
     def applyProductions(self, startGraph, productions, config):
         """
-        Randomly applies a production from the given list of productions to the
+        Randomly applies a Production from the given list of Productions to the
         specified starting graph until the graph contains at least the number
         of vertices specified by the config option "min_vertices". This assumes
         that the productions generally increase the number of vertices.
         Inputs: 
-                * startGraph - Graph to begin applying transformations
-                * productions - list of Production objects
-                * config - dictionary of key/value pairs of configuration options. Only
-                    one is mandatory: min_vertices, which indicates when to stop
-                    applying productions.
+            * startGraph - Graph to begin applying transformations
+            * productions - list of Production objects
+            * config - dictionary of options
         Outputs: None
         """ 
         while startGraph.numVertices < config['min_vertices']:
@@ -70,6 +70,8 @@ class Generator(object):
 
         self.applyProductions(p.startGraph, p.productions, p.config)
 
+    #--------------------------------------------------------------------------
+    # PRIVATE METHODS - These aren't the methods you're looking for.
     #--------------------------------------------------------------------------
     def _addNewEdges(self, graph, production, rhsMapping):
         """
