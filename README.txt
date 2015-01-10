@@ -30,8 +30,8 @@ parser and associated lexer. Classes include:
 - Token - a simple representation of a token with type and lexeme
 - Lexer - converts the input character stream into a stream of Tokens
 - Parser - reads the input Token stream from the Lexer and builds a 
-	Configuration object to guide the Generator, and a list of Productions for
-	the Generator to use. A sample grammar is given below:
+  Configuration object to guide the Generator, and a list of Productions for
+  the Generator to use. A sample grammar is given below:
 
 		# Sample Grammar File
 
@@ -40,8 +40,7 @@ parser and associated lexer. Classes include:
 		}
 
 		productions {
-			# Start graph.
-			A;
+			A;	# start graph
 
 			# Productions
 			A ==> A -> B;
@@ -49,10 +48,13 @@ parser and associated lexer. Classes include:
 			A -> C ==> C -> A;
 		}
 		
-- Configuration
-- Production
-
-- Productions - unused?
+- Configuration - the Configuration class provides simple access to
+  configuration options in the form Configuration.options[KEY]. So in the
+  above example, we could access Configuration.options['max_states'].
+- Production - this class provides a simple representation of a graph
+  transformation production (e.g., A->B ==> A->C). The stores the graph on
+  the left-hand side in Production.lhs, and the graph on the right-hand side
+  in Production.rhs.
 
 ### Generator Tool Implementation
 
