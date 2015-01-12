@@ -9,32 +9,43 @@ from PGC.Graph.Vertex import Vertex
 
 # TODO: Test Call Graph
 # applyProductions
-#   findMatchingProductions
 #   _applyProduction
 
 class TestGenerator(unittest.TestCase):
 
     #--------------------------------------------------------------------------
-    def XXXtestFindMatchingProductions(self):
-        # Build a basic A->B, A->C graph.
-        g = Graph()
-        g.addEdge(Vertex('v1', 'A'), Vertex('v2', 'B'))
-        g.addEdge('v1', Vertex('v3', 'C'))
-
+    def testFindMatchingProductions(self):
+        # Providing no productions should result in no matches.
         gen = Generator()
-
-        # Providing no productions should result in no productions.
-        self.assertEquals( len(gen._findMatchingProductions(g, [])), 0)
-
+        g = Graph()
+        self.assertEquals( len(gen._findMatchingProductions(g, [])), 0)        
+        
+        # We have a production, but the LHS can't be found in the graph.
+        # No solutions.
+        g = Graph()
+        g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
+        lhs = Graph()
+        lhs.addEdge(Vertex('v1', 'C'), Vertex('v1', 'D'))
+        rhs = Graph()
+        p1 = Production(lhs, rhs)
+        gen = Generator()
+        self.assertEquals( len(gen._findMatchingProductions(g, [p1])), 0)        
         # One matching production, a simple vertex "A".
+        g = Graph()
+        g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
         lhs = Graph()
         lhs.addVertex(Vertex('u1', 'A'))
         rhs = Graph()
         p1 = Production(lhs, rhs)
-        matchingProductions = gen._findMatchingProductions(g, [p1])
-        self.assertEquals( len(matchingProductions), 1 )
+        self.assertEquals( len(gen._findMatchingProductions(g, [p1])), 1)
 
         # Two matching productions.
+        g = Graph()
+        g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
+        lhs = Graph()
+        lhs.addVertex(Vertex('u1', 'A'))
+        rhs = Graph()
+        p1 = Production(lhs, rhs)
         p2 = Production(lhs, rhs)
         self.assertEquals( len(gen._findMatchingProductions(g, [p1, p2])), 2)
         

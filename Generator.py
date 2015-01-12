@@ -188,20 +188,22 @@ class Generator(object):
     #--------------------------------------------------------------------------
     def _findMatchingProductions(self, graph, productions):
         """
-        Finds all the productions whose LHS can be found in graph.
+        Finds all the productions whose LHS graph can be found in graph.
         Inputs: 
-                * graph - Graph to search
-                * productions - list of Production objects to search
+            * graph - Graph to search
+            * productions - list of Production objects to search
         Outputs: list of (Production, mapping) tuples where Production
-            is a Production that can be found in graph, and mapping is
-            a {vid->vid} dictionary of where the lhs can be found.
+            is a Production whose LHS can be found in graph, and mapping is
+            a {vid->vid} dictionary (LHS->graph) of where the LHS can be found.
         """
         solutions = []
         for prod in productions:
             logging.debug('Checking production %s ' % prod.lhs)
-            matches = graph.search(prod.lhs)
-            if len(matches) > 0:
-                for match in matches:
+
+            # Find all places where prod.lhs can be found in graph.
+            listOfMatches = graph.search(prod.lhs)
+            if len(listOfMatches) > 0:
+                for match in listOfMatches:
                     solutions.append( (prod, match) )
                     logging.debug('Production %s matches' % prod.lhs)
             else:
