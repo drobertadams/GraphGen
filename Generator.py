@@ -82,7 +82,7 @@ class Generator(object):
                 * graph - Graph to which to apply the production
                 * production - Production to apply
                 * rhsMapping - {vid->vid} mapping between production.rhs
-                        and graph
+                  and graph
         Outputs: None
         """	
         for rhsEdge in production.rhs.edges: # [Vertex,Vertex]
@@ -130,8 +130,8 @@ class Generator(object):
         Inputs:
             graph - Graph to which to apply the production
             production - Production to apply
-            lhsMapping - {vid->vid} mapping between production.lhs
-                    and graph
+            lhsMapping - {vid->vid} mapping from production.lhs
+                to graph
         Outputs: None
         """
         rhsMapping = self._mapRHSToGraph(graph, production, lhsMapping)
@@ -218,21 +218,22 @@ class Generator(object):
         """
         Maps to production's rhs vertices to graph. For rhs vertices that
         appear in the lhs, we use the lhsMapping to determine which graph
-        vertex to rhs vertex maps to. For rhs vertices that are new (i.e.,
-        don't exist in the lhs), we ignore them.
+        vertex the rhs vertex maps to. For rhs vertices that are new (i.e.,
+        don't exist in the lhs), we ignore them for now and update the
+        rhs mapping when we add the new vertices to graph.
         Inputs:
             * graph - Graph to which to apply the production
             * production - Production to apply
-            * lhs2GraphMapping - {vid->vid} mapping between production.lhs
-              vertices and graph
-        Outputs: {vid->vid} mapping between production.rhs vertices and graph
+            * lhs2GraphMapping - {vid->vid} mapping from production.lhs
+              vertices to graph
+        Outputs: {vid->vid} mapping from production.rhs vertices to graph
         """
-
         rhsMapping = {}
 
-        for rhsVertex in production.rhs.vertices.itervalues():
+        for rhsVertex in production.rhs.vertices:
             if rhsVertex.label in production.lhs.labels:
-                rhsMapping[rhsVertex.id] = lhsMapping[production.lhs.findVertexWithLabel(rhsVertex.label).id] 
+                lhsVertex = production.lhs.findVertexWithLabel(rhsVertex.label)
+                rhsMapping[rhsVertex.id] = lhsMapping[lhsVertex.id] 
         return rhsMapping
 
     #--------------------------------------------------------------------------

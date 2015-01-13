@@ -10,6 +10,7 @@ from PGC.Graph.Vertex import Vertex
 # TODO: Test Call Graph
 # applyProductions
 #   _applyProduction
+#       _mapRHSToGraph
 #       _addNewEdges
 #       _deleteMissingEdges
 #       _deleteMissingVertices
@@ -80,6 +81,31 @@ class TestGenerator(unittest.TestCase):
         p2 = Production(lhs, rhs)
         self.assertEquals( len(gen._findMatchingProductions(g, [p1, p2])), 2)
         
+    #--------------------------------------------------------------------------
+    def testMapRHSToGraph(self):
+        # No vertices in rhs. Mapping returned is empty.
+        g = Graph()
+        lhs = Graph()
+        rhs = Graph()
+        p = Production(lhs, rhs)
+        gen = Generator()
+        rhsMapping = gen._mapRHSToGraph(g, p, {})
+        self.assertEqual(len(rhsMapping), 0)
+
+        # rhs has vertex r1, but it doesn't appear in the lhs. Mapping returned
+        # is empty.
+        rhs.addVertex(Vertex('r1', 'A'))
+        rhsMapping = gen._mapRHSToGraph(g, p, {})
+        self.assertEqual(len(rhsMapping), 0)
+
+        # rhs vertex r1 also appears in lhs as l1, which is mapped to g1. 
+        # r1 should appear in rhsMapping mapped to g1.
+        lhs.addVertex(Vertex('l1', 'A'))
+        rhsMapping = gen._mapRHSToGraph(g, p, {'l1':'g1'})
+        self.assertEqual(len(rhsMapping), 1)
+        self.assertIn('r1', rhsMapping)
+        self.assertEqual(rhsMapping['r1'], 'g1')
+
 
 
 
@@ -194,30 +220,6 @@ class TestGenerator(unittest.TestCase):
         gen._deleteMissingVertices(graph, production, lhsMapping)
         self.assertEqual(len(graph.vertices), 1)
         self.assertTrue('v1' not in graph.vertices)
-
-    #--------------------------------------------------------------------------
-    def XXXtestMapRHSToGraph(self):
-        # Test def _mapRHSToGraph(self, graph, production, lhsMapping):
-
-        # Basic graph with one vertex A.
-        graph = Graph()
-        graph.addVertex(Vertex('v0', 'A'))
-        self.assertEquals(graph.numVertices, 1)
-
-        # Simple production A ==> A->B
-        lhs = Graph()
-        lhs.addVertex(Vertex('u0', 'A'))
-        rhs = Graph()
-        rhs.addEdge(Vertex('u0', 'A'), Vertex('u1', 'B'))
-        production = Production(lhs, rhs)
-        
-        lhsMapping = {'u0':'v0'} # normally created by Graph.search()
-
-        # Production should have increased the number of vertices.
-        gen = Generator()
-        rhsMapping = gen._mapRHSToGraph(graph, production, lhsMapping)
-        self.assertEquals(len(rhsMapping), 1)
-        self.assertEquals(rhsMapping['u0'], 'v0') # rhs u0 mapped to graph v0
 
 # debug, info, warning, error and critical
 if __name__ == '__main__':
