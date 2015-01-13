@@ -10,7 +10,6 @@ from PGC.Graph.Vertex import Vertex
 # TODO: Test Call Graph
 # applyProductions
 #   _applyProduction
-#       _mapRHSToGraph
 #       _addNewEdges
 #       _deleteMissingEdges
 #       _deleteMissingVertices
@@ -26,7 +25,7 @@ class TestGenerator(unittest.TestCase):
         p = Production(lhs, rhs)
         gen = Generator()
         self.assertEqual(len(g._vertices), 0)
-        gen._addNewVertices(g, p)
+        gen._addNewVertices(g, p, {})
         self.assertEqual(len(g._vertices), 0)
         
         # Production rhs has vertices, but they all appear in the LHS. Hence
@@ -34,16 +33,19 @@ class TestGenerator(unittest.TestCase):
         lhs.addVertex(Vertex('l1', 'A'))
         rhs.addVertex(Vertex('r1', 'A'))
         self.assertEqual(len(g._vertices), 0)
-        gen._addNewVertices(g, p)
+        gen._addNewVertices(g, p, {})
         self.assertEqual(len(g._vertices), 0)
 
         # rhs has one new vertex not in the lhs.
+        rhsMapping = {}
         rhs.addVertex(Vertex('r2', 'B'))
         self.assertEqual(len(g._vertices), 0)
-        gen._addNewVertices(g, p)
+        gen._addNewVertices(g, p, rhsMapping)
         self.assertEqual(len(g._vertices), 1)
         self.assertIn('v0', g._vertices)               # new vertex is v0
         self.assertEqual(g._vertices['v0'].label, 'B') # with label B
+        self.assertIn('r2', rhsMapping)                # now appears in rhsMapping
+        self.assertEqual(rhsMapping['r2'], 'v0')       # r2 mapped to v0 (the newly added vertex) in graph
 
     #--------------------------------------------------------------------------
     def testFindMatchingProductions(self):

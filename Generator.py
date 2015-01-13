@@ -96,29 +96,24 @@ class Generator(object):
                 graph.addEdge(graphStartVID, graphEndVID)
 
     #--------------------------------------------------------------------------
-    def _addNewVertices(self, graph, production):
-    #def _addNewVertices(self, graph, production, lhsMapping, rhsMapping):
+    def _addNewVertices(self, graph, production, rhsMapping):
         """
         Adds vertices to graph that appear in production.rhs but not in 
         production.lhs. New vertices are given a vid of the form 'vN' where
-        N is the number of vertices currently in the graph.
+        N is the number of vertices currently in the graph. New graph vertices
+        are also added to rhsMapping.
         Inputs:
             * graph - Graph to which to apply the production
             * production - Production to apply
-#            * lhs2GraphMapping - {vid->vid} mapping between production.lhs
-#              and graph
+            * rhshMapping - {vid->vid} mapping from production.rhs to graph.
+              This is typically created by _mapRHSToGraph().
         Outputs: nothing
         """
-        #for rhsVertex in production.rhs.vertices.itervalues():
         for rhsVertex in production.rhs.vertices:
             if rhsVertex.label not in production.lhs.labels:
-                #logging.debug("found rhs rhsVertex %s not in lhs" % rhsVertex)
                 newVertexID = 'v%s' % graph.numVertices
-                #logging.debug("adding vertex to graph with id %s and label %s" % (newVertexID, rhsVertex.label))
-                #logging.debug("graph as %d vertices" % graph.numVertices)
                 newVertex = graph.addVertex(Vertex(newVertexID, rhsVertex.label))
-                #logging.debug("graph now has %d vertices" % graph.numVertices)
-                #rhsMapping[rhsVertex.id] = newVertexID
+                rhsMapping[rhsVertex.id] = newVertexID
 
     #--------------------------------------------------------------------------
     def _applyProduction(self, graph, production, lhsMapping):
