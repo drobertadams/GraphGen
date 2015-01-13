@@ -55,12 +55,12 @@ parser and associated lexer. Classes include:
 
 ### Generator Tool Implementation
 
-Generator - Generator is a transformation engine for graphs. Given a set of
+Generator - Generator is a transformation engine for graphs. Given a list of
 Productions of the form lhs ==> rhs, and using a starting graph G, uses graph
-isomorphic searching to find instances of a lhs in G and replaces the lhs
-vertices with the rhs.  The engine continues to apply these transformations
-until G contains a given number of vertices. This assumes that the productions
-generally increase the number of vertices.
+isomorphic searching to find instances of a lhs in G and replaces the lhs with
+the rhs.  The engine continues to apply these transformations until G contains
+a given number of vertices. This assumes that the productions generally
+increase the number of vertices.
 
 ### Graph Implementation
 

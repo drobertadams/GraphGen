@@ -10,8 +10,39 @@ from PGC.Graph.Vertex import Vertex
 # TODO: Test Call Graph
 # applyProductions
 #   _applyProduction
+#       _addNewEdges
+#       _deleteMissingEdges
+#       _deleteMissingVertices
 
 class TestGenerator(unittest.TestCase):
+
+    #--------------------------------------------------------------------------
+    def testAddNewVertices(self):
+        # Production rhs has no vertices, so nothing done.
+        g = Graph()
+        lhs = Graph()
+        rhs = Graph()
+        p = Production(lhs, rhs)
+        gen = Generator()
+        self.assertEqual(len(g._vertices), 0)
+        gen._addNewVertices(g, p)
+        self.assertEqual(len(g._vertices), 0)
+        
+        # Production rhs has vertices, but they all appear in the LHS. Hence
+        # they aren't new and nothing is done.
+        lhs.addVertex(Vertex('l1', 'A'))
+        rhs.addVertex(Vertex('r1', 'A'))
+        self.assertEqual(len(g._vertices), 0)
+        gen._addNewVertices(g, p)
+        self.assertEqual(len(g._vertices), 0)
+
+        # rhs has one new vertex not in the lhs.
+        rhs.addVertex(Vertex('r2', 'B'))
+        self.assertEqual(len(g._vertices), 0)
+        gen._addNewVertices(g, p)
+        self.assertEqual(len(g._vertices), 1)
+        self.assertIn('v0', g._vertices)               # new vertex is v0
+        self.assertEqual(g._vertices['v0'].label, 'B') # with label B
 
     #--------------------------------------------------------------------------
     def testFindMatchingProductions(self):
@@ -49,6 +80,12 @@ class TestGenerator(unittest.TestCase):
         p2 = Production(lhs, rhs)
         self.assertEquals( len(gen._findMatchingProductions(g, [p1, p2])), 2)
         
+
+
+
+
+
+
     #--------------------------------------------------------------------------
 # TODO
     def XXXtestApplyProductions(self):
@@ -109,32 +146,6 @@ class TestGenerator(unittest.TestCase):
         rhsMapping = gen._addNewEdges(graph, production, rhsMapping)
         self.assertEquals(len(graph._edges), 1)
         self.assertEquals(graph._edges['v0'][0].id, 'v1') # new edge between A and B
-
-    #--------------------------------------------------------------------------
-    def XXXtestAddNewVertices(self):
-        # Test that productions can add vertices.
-
-        # Basic graph with one vertex A.
-        graph = Graph()
-        graph.addVertex(Vertex('v0', 'A'))
-        self.assertEquals(graph.numVertices, 1)
-
-        # Simple production A ==> A->B
-        lhs = Graph()
-        lhs.addVertex(Vertex('u0', 'A'))
-        rhs = Graph()
-        rhs.addEdge(Vertex('u0', 'A'), Vertex('u1', 'B'))
-        production = Production(lhs, rhs)
-        
-        lhsMapping = {'u0':'v0'} # normally created by Graph.search()
-        rhsMapping = {'u0':'v0'} # normally created by Generator._mapRHSToGraph()
-
-        # Production should have increased the number of vertices.
-        gen = Generator()
-        gen._addNewVertices(graph, production, lhsMapping, rhsMapping)
-        self.assertEquals(graph.numVertices, 2)
-        self.assertEquals(rhsMapping['u0'], 'v0') # rhs u0 mapped to graph v0
-        self.assertEquals(rhsMapping['u1'], 'v1') # rhs u1 mapped to graph v1
 
     #--------------------------------------------------------------------------
     def XXXtestDeleteMissingEdges(self):
@@ -212,3 +223,4 @@ class TestGenerator(unittest.TestCase):
 if __name__ == '__main__':
 	logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 	unittest.main()
+# vim:nowrap
