@@ -10,11 +10,55 @@ from PGC.Graph.Vertex import Vertex
 # TODO: Test Call Graph
 # applyProductions
 #   _applyProduction
-#       _addNewEdges
 #       _deleteMissingEdges
 #       _deleteMissingVertices
 
 class TestGenerator(unittest.TestCase):
+
+    #--------------------------------------------------------------------------
+    def testAddNewEdges(self):
+        # rhs has no edges, so nothing changes.
+        g = Graph()
+        lhs = Graph()
+        rhs = Graph()
+        p = Production(lhs,rhs)
+        rhsMapping = {}
+        gen = Generator()
+        self.assertEqual(len(g._edges), 0)
+        gen._addNewEdges(g, p, rhsMapping)
+        self.assertEqual(len(g._edges), 0)
+
+        # rhs has an edge, but it already exists in the graph.
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        lhs = Graph()
+        rhs = Graph()
+        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        p = Production(lhs,rhs)
+        rhsMapping = {'r0':'g0', 'r1':'g1'}
+        gen = Generator()
+        self.assertEqual(len(g._edges['g0']), 1)
+        gen._addNewEdges(g, p, rhsMapping)
+        self.assertEqual(len(g._edges['g0']), 1)
+
+        # rhs has a new edge not in graph.
+        g = Graph()
+        g.addVertex(Vertex('g0', 'A'))
+        g.addVertex(Vertex('g1', 'B'))
+        lhs = Graph()
+        rhs = Graph()
+        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        p = Production(lhs,rhs)
+        rhsMapping = {'r0':'g0', 'r1':'g1'}
+        gen = Generator()
+        self.assertEqual(len(g._edges['g0']), 0)
+        gen._addNewEdges(g, p, rhsMapping)
+        self.assertEqual(len(g._edges['g0']), 1)
+        self.assertEqual(g._edges['g0'][0].id, 'g1')
+
+
+
+
 
     #--------------------------------------------------------------------------
     def testAddNewVertices(self):
@@ -150,31 +194,6 @@ class TestGenerator(unittest.TestCase):
 
         self.assertTrue(True)
  
-    #--------------------------------------------------------------------------
-    def XXXtestAddNewEdges(self):
-        # Test that productions can add edges.
-
-        # Basic graph with two unconnected vertices A and B.
-        graph = Graph()
-        graph.addVertex(Vertex('v0', 'A'))
-        graph.addVertex(Vertex('v1', 'B'))
-        self.assertEquals(graph.numVertices, 2)
-
-        # Simple production A ==> A->B
-        lhs = Graph()
-        lhs.addVertex(Vertex('u0', 'A'))
-        rhs = Graph()
-        rhs.addEdge(Vertex('u0', 'A'), Vertex('u1', 'B'))
-        production = Production(lhs, rhs)
-        
-        rhsMapping = {'u0':'v0', 'u1':'v1'} # normally created by Generator._mapRHSToGraph()
-
-        # Production should have increased the number of edges.
-        gen = Generator()
-        rhsMapping = gen._addNewEdges(graph, production, rhsMapping)
-        self.assertEquals(len(graph._edges), 1)
-        self.assertEquals(graph._edges['v0'][0].id, 'v1') # new edge between A and B
-
     #--------------------------------------------------------------------------
     def XXXtestDeleteMissingEdges(self):
         # Test deleteMissingEdges(graph, production, lhsMapping, rhsMapping)

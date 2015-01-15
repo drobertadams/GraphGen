@@ -77,22 +77,22 @@ class Generator(object):
         """
         Adds edges to graph that appear in production.rhs but not in 
         production.lhs. Assumes that all the new vertices in the production.rhs
-        have been added to graph.
+        have been added to graph, and rhsMapping has been updated accordingly.
         Inputs:
-                * graph - Graph to which to apply the production
-                * production - Production to apply
-                * rhsMapping - {vid->vid} mapping between production.rhs
-                  and graph
+            * graph - Graph to which to apply the production
+            * production - Production to apply
+            * rhsMapping - {vid->vid} mapping between production.rhs
+              and graph
         Outputs: None
         """	
-        for rhsEdge in production.rhs.edges: # [Vertex,Vertex]
-            logging.debug('checking for edge between %s and %s in graph' % (rhsEdge[0].label, rhsEdge[1].label))
+        for rhsEdge in production.rhs.edges: # [startVertex,endVertex]
+            #logging.debug('checking for edge between %s and %s in graph' % (rhsEdge[0].label, rhsEdge[1].label))
             graphStartVID = rhsMapping[rhsEdge[0].id]
             graphEndVID = rhsMapping[rhsEdge[1].id]
             #if (graphStartVID not in graph._edges) or (graphEndVID not in graph._edges[graphStartVID]):
-            if not graph.hasEdgeBetween(graphStartVID, graphEndVID):
-                logging.debug("edge doesn't exist. creating it")
-                logging.debug('adding edge between %s and %s' % (graphStartVID, graphEndVID))
+            if not graph.hasEdgeBetweenVertices(graphStartVID, graphEndVID):
+                #logging.debug("edge doesn't exist. creating it")
+                #logging.debug('adding edge between %s and %s' % (graphStartVID, graphEndVID))
                 graph.addEdge(graphStartVID, graphEndVID)
 
     #--------------------------------------------------------------------------
