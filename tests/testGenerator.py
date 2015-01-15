@@ -10,7 +10,6 @@ from PGC.Graph.Vertex import Vertex
 # TODO: Test Call Graph
 # applyProductions
 #   _applyProduction
-#       _deleteMissingEdges
 #       _deleteMissingVertices
 
 class TestGenerator(unittest.TestCase):
@@ -56,10 +55,6 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(len(g._edges['g0']), 1)
         self.assertEqual(g._edges['g0'][0].id, 'g1')
 
-
-
-
-
     #--------------------------------------------------------------------------
     def testAddNewVertices(self):
         # Production rhs has no vertices, so nothing done.
@@ -92,6 +87,54 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(rhsMapping['r2'], 'v0')       # r2 mapped to v0 (the newly added vertex) in graph
 
     #--------------------------------------------------------------------------
+    def testDeleteMissingEdges(self):
+        # If lhs has no edges, then there's nothing missing from the rhs.
+        # Nothing is done to the graph.
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        lhs = Graph()
+        rhs = Graph()
+        p = Production(lhs,rhs)
+        lhsMapping = {}
+        rhsMapping = {}
+        gen = Generator()
+        self.assertEqual(len(g._edges['g0']), 1)
+        gen._deleteMissingEdges(g, p, lhsMapping, rhsMapping)
+        self.assertEqual(len(g._edges['g0']), 1)
+
+        # lhs has an edge, but it also appears on the rhs. Nothing done.
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        lhs = Graph()
+        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        rhs = Graph()
+        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        p = Production(lhs,rhs)
+        lhsMapping = {'l0':'g0', 'l1':'g1'}
+        rhsMapping = {'r0':'g0', 'r1':'g1'}
+        gen = Generator()
+        self.assertEqual(len(g._edges['g0']), 1)
+        gen._deleteMissingEdges(g, p, lhsMapping, rhsMapping)
+        self.assertEqual(len(g._edges['g0']), 1)
+
+        # lhs has an edge, but it's gone from the rhs. It should be deleted
+        # from the graph.
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        lhs = Graph()
+        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        rhs = Graph()
+        rhs.addVertex(Vertex('r0', 'A'))
+        rhs.addVertex(Vertex('r1', 'B'))
+        p = Production(lhs,rhs)
+        lhsMapping = {'l0':'g0', 'l1':'g1'}
+        rhsMapping = {'r0':'g0', 'r1':'g1'}
+        gen = Generator()
+        self.assertEqual(len(g._edges['g0']), 1)
+        gen._deleteMissingEdges(g, p, lhsMapping, rhsMapping)
+        self.assertEqual(len(g._edges['g0']), 0)
+
+    #--------------------------------------------------------------------------
     def testFindMatchingProductions(self):
         # Providing no productions should result in no matches.
         gen = Generator()
@@ -108,6 +151,7 @@ class TestGenerator(unittest.TestCase):
         p1 = Production(lhs, rhs)
         gen = Generator()
         self.assertEquals( len(gen._findMatchingProductions(g, [p1])), 0)        
+
         # One matching production, a simple vertex "A".
         g = Graph()
         g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
@@ -194,31 +238,7 @@ class TestGenerator(unittest.TestCase):
 
         self.assertTrue(True)
  
-    #--------------------------------------------------------------------------
-    def XXXtestDeleteMissingEdges(self):
-        # Test deleteMissingEdges(graph, production, lhsMapping, rhsMapping)
-
-        # Build a graph A->B, A->C.
-        graph = Graph()
-        graph.addEdge(Vertex('v0', 'A'), Vertex('v1', 'B'))
-        graph.addEdge('v0', Vertex('v2', 'C'))
-   
-        # Simple production A->B ==> A,B (edge between A and B is missing)
-        lhs = Graph()
-        lhs.addEdge(Vertex('u0', 'A'), Vertex('u1', 'B'))
-        rhs = Graph()
-        rhs.addVertex(Vertex('u0', 'A'))
-        rhs.addVertex(Vertex('u1', 'B'))
-        production = Production(lhs, rhs)
-        
-        lhsMapping = {'u0':'v0','u1':'v1'} # normally created by Graph.search()
-        rhsMapping = {'u0':'v0','u1':'v1'} # normally created by Generator._mapRHSToGraph()
-
-        self.assertTrue(graph.hasEdgeBetween('v0','v1')) # A points to B
-        gen = Generator()
-        gen._deleteMissingEdges(graph, production, lhsMapping, rhsMapping)
-        self.assertFalse(graph.hasEdgeBetween('v0','v1')) # A no longer points to B
-        
+      
     #--------------------------------------------------------------------------
     def XXXtestDeleteMissingVertices(self):
         # Test deleteMissingVertices(graph, production, lhsMapping)

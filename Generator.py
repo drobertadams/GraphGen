@@ -86,13 +86,9 @@ class Generator(object):
         Outputs: None
         """	
         for rhsEdge in production.rhs.edges: # [startVertex,endVertex]
-            #logging.debug('checking for edge between %s and %s in graph' % (rhsEdge[0].label, rhsEdge[1].label))
             graphStartVID = rhsMapping[rhsEdge[0].id]
             graphEndVID = rhsMapping[rhsEdge[1].id]
-            #if (graphStartVID not in graph._edges) or (graphEndVID not in graph._edges[graphStartVID]):
             if not graph.hasEdgeBetweenVertices(graphStartVID, graphEndVID):
-                #logging.debug("edge doesn't exist. creating it")
-                #logging.debug('adding edge between %s and %s' % (graphStartVID, graphEndVID))
                 graph.addEdge(graphStartVID, graphEndVID)
 
     #--------------------------------------------------------------------------
@@ -144,23 +140,22 @@ class Generator(object):
         Inputs:
             * graph - Graph to which to apply the production
             * production - Production to apply
-            * lhsMapping - {vid->vid} mapping between production.lhs
-                    and graph
-            * rhsMapping - {vid->vid} mapping between production.rhs
-                    and graph
+            * lhsMapping - {vid->vid} mapping from production.lhs
+              to graph
+            * rhsMapping - {vid->vid} mapping from production.rhs
+              to graph
         Outputs: None
         """
-        for lhsEdge in production.lhs.edges:    # [Vertex,Vertex]
-            logging.debug('checking for edge between %s and %s in rhs' % (lhsEdge[0].label, lhsEdge[1].label))
+        for lhsEdge in production.lhs.edges:    # [startVertex,endVertex]
             graphStartVID = lhsMapping[lhsEdge[0].id]
             graphEndVID = lhsMapping[lhsEdge[1].id]
             
-            # Probably should move this to a method to make it more readable.
+            # Figure out which rhs vertices are mapped to the starting and
+            # ending graph vertices we just calculated.
             rhsStartVID = [rhsID for rhsID,graphID in rhsMapping.items() if graphID == graphStartVID][0]
             rhsEndVID = [rhsID for rhsID,graphID in rhsMapping.items() if graphID == graphEndVID][0]
 
-            if not production.rhs.hasEdgeBetween(rhsStartVID, rhsEndVID):
-                logging.debug('no edge found in rhs, removing from graph')
+            if not production.rhs.hasEdgeBetweenVertices(rhsStartVID, rhsEndVID):
                 graph.deleteEdge(graphStartVID, graphEndVID)
 
     #--------------------------------------------------------------------------
