@@ -62,6 +62,11 @@ the rhs.  The engine continues to apply these transformations until G contains
 a given number of vertices. This assumes that the productions generally
 increase the number of vertices.
 
+The Generator interprets a production to mean "change the lhs to look like the
+rhs". This means a production of the form "A->B ==> A->C" says to remove B from
+the graph (and the corresponding edge from A), and add a new vertex C (with a
+new corresponding edge from A).
+
 ### Graph Implementation
 
 Graph/ contains an implementation

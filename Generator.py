@@ -137,7 +137,7 @@ class Generator(object):
         Deletes edges from graph that appear in production.lhs but not in 
         production.rhs. Assumes the vertices between lhs and rhs have been
         added/removed.
-        Inputs:
+        Inputs: 
             * graph - Graph to which to apply the production
             * production - Production to apply
             * lhsMapping - {vid->vid} mapping from production.lhs
@@ -162,21 +162,19 @@ class Generator(object):
     def _deleteMissingVertices(self, graph, production, lhsMapping):
         """
         Deletes vertices from graph that appear in production.lhs but not in 
-        production.rhs.
+        production.rhs. It also deletes all edges to lead to or from the
+        deleted vertex.
         Inputs:
-                * graph - Graph to which to apply the production
-                * production - Production to apply
-                * lhsMapping - {vid->vid} mapping between production.lhs
-                        and graph
+            * graph - Graph to which to apply the production
+            * production - Production to apply
+            * lhsMapping - {vid->vid} mapping between production.lhs
+                    and graph
         Outputs: None
         """
-        for lhsVertex in production.lhs.vertices.itervalues():
-            if lhsVertex.label not in production.rhs.labels:
-                logging.debug("found lhs lhsVertex %s not in rhs" % lhsVertex)
+        for lhsVertex in production.lhs.vertices:
+            if not production.rhs.findVertexWithLabel(lhsVertex.label):
                 graphVertexID = lhsMapping[lhsVertex.id]
-                logging.debug("deleting vertex from graph with id %s" % graphVertexID)
-                newVertex = graph.deleteVertex(graphVertexID)
-                logging.debug("graph now has %d vertices" % graph.numVertices)
+                graph.deleteVertex(graphVertexID)
 
     #--------------------------------------------------------------------------
     def _findMatchingProductions(self, graph, productions):

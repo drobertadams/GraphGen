@@ -1,3 +1,4 @@
+import copy
 import logging
 import sys
 import unittest
@@ -10,7 +11,6 @@ from PGC.Graph.Vertex import Vertex
 # TODO: Test Call Graph
 # applyProductions
 #   _applyProduction
-#       _deleteMissingVertices
 
 class TestGenerator(unittest.TestCase):
 
@@ -135,6 +135,34 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(len(g._edges['g0']), 0)
 
     #--------------------------------------------------------------------------
+    def testDeleteMissingVertices(self):
+        # lhs has no vertices(!). Nothing done.
+        g = Graph()
+        gcopy = copy.deepcopy(g)
+        lhs = Graph()
+        rhs = Graph()
+        p = Production(lhs, rhs)
+        gen = Generator()
+        gen._deleteMissingVertices(g, p, {})
+        self.assertEqual(g.__dict__, gcopy.__dict__)
+
+        # lhs has vertices, but they all appear in the rhs. Nothing done.
+        lhs.addVertex(Vertex('l0', 'A'))
+        rhs.addVertex(Vertex('r0', 'A'))
+        gen._deleteMissingVertices(g, p, {})
+        self.assertEqual(g.__dict__, gcopy.__dict__)
+
+        # lhs has vertices that don't appear in the rhs. They should be
+        # deleted from g.
+        g.addVertex(Vertex('g0', 'A'))
+        rhs = Graph()
+        p = Production(lhs, rhs)
+        gen._deleteMissingVertices(g, p, {'l0':'g0'})
+        self.assertEqual(len(g._vertices), 0)
+        self.assertEqual(len(g._edges), 0)
+        self.assertEqual(len(g._neighbors), 0)
+
+    #--------------------------------------------------------------------------
     def testFindMatchingProductions(self):
         # Providing no productions should result in no matches.
         gen = Generator()
@@ -238,30 +266,6 @@ class TestGenerator(unittest.TestCase):
 
         self.assertTrue(True)
  
-      
-    #--------------------------------------------------------------------------
-    def XXXtestDeleteMissingVertices(self):
-        # Test deleteMissingVertices(graph, production, lhsMapping)
-
-        # Build a graph A->B
-        graph = Graph()
-        graph.addEdge(Vertex('v0', 'A'), Vertex('v1', 'B'))
-   
-        # Simple production A->B ==> A
-        lhs = Graph()
-        lhs.addEdge(Vertex('u0', 'A'), Vertex('u1', 'B'))
-        rhs = Graph()
-        rhs.addVertex(Vertex('u0', 'A'))
-        production = Production(lhs, rhs)
-        
-        lhsMapping = {'u0':'v0','u1':'v1'}  # normally created by Graph.search()
-
-        self.assertEqual(len(graph.vertices), 2)
-        gen = Generator()
-        gen._deleteMissingVertices(graph, production, lhsMapping)
-        self.assertEqual(len(graph.vertices), 1)
-        self.assertTrue('v1' not in graph.vertices)
-
 # debug, info, warning, error and critical
 if __name__ == '__main__':
 	logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
