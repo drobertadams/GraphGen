@@ -85,11 +85,14 @@ class Generator(object):
               and graph
         Outputs: None
         """	
+        logging.debug('>>> _addNewEdges <<<')
         for rhsEdge in production.rhs.edges: # [startVertex,endVertex]
             graphStartVID = rhsMapping[rhsEdge[0].id]
             graphEndVID = rhsMapping[rhsEdge[1].id]
             if not graph.hasEdgeBetweenVertices(graphStartVID, graphEndVID):
                 graph.addEdge(graphStartVID, graphEndVID)
+        logging.debug('graph is now %s' % graph)
+
 
     #--------------------------------------------------------------------------
     def _addNewVertices(self, graph, production, rhsMapping):
@@ -105,11 +108,15 @@ class Generator(object):
               This is typically created by _mapRHSToGraph().
         Outputs: nothing
         """
+        logging.debug('>>> _addNewVertices <<<')
         for rhsVertex in production.rhs.vertices:
             if rhsVertex.label not in production.lhs.labels:
+                logging.debug('label %s in rhs but not lhs' % rhsVertex.label)
                 newVertexID = 'v%s' % graph.numVertices
                 newVertex = graph.addVertex(Vertex(newVertexID, rhsVertex.label))
+                logging.debug('added vertex %s' % newVertex)
                 rhsMapping[rhsVertex.id] = newVertexID
+        logging.debug('graph is now %s' % graph)
 
     #--------------------------------------------------------------------------
     def _applyProduction(self, graph, production, lhsMapping):
@@ -126,7 +133,7 @@ class Generator(object):
         Outputs: None
         """
         rhsMapping = self._mapRHSToGraph(graph, production, lhsMapping)
-        self._addNewVertices(graph, production, lhsMapping, rhsMapping)
+        self._addNewVertices(graph, production, rhsMapping)
         self._addNewEdges(graph, production, rhsMapping)
         self._deleteMissingEdges(graph, production, lhsMapping, rhsMapping)
         self._deleteMissingVertices(graph, production, lhsMapping)
@@ -135,8 +142,8 @@ class Generator(object):
     def _deleteMissingEdges(self, graph, production, lhsMapping, rhsMapping):
         """
         Deletes edges from graph that appear in production.lhs but not in 
-        production.rhs. Assumes the vertices between lhs and rhs have been
-        added/removed.
+        production.rhs. Assumes new vertices on rhs have been added to
+        graph.
         Inputs: 
             * graph - Graph to which to apply the production
             * production - Production to apply
@@ -146,17 +153,37 @@ class Generator(object):
               to graph
         Outputs: None
         """
+        logging.debug('>>> _deleteMissingEdges <<<')
         for lhsEdge in production.lhs.edges:    # [startVertex,endVertex]
+
+            # Starting and ending vertices of the corresponding edge in graph.
             graphStartVID = lhsMapping[lhsEdge[0].id]
             graphEndVID = lhsMapping[lhsEdge[1].id]
             
-            # Figure out which rhs vertices are mapped to the starting and
-            # ending graph vertices we just calculated.
-            rhsStartVID = [rhsID for rhsID,graphID in rhsMapping.items() if graphID == graphStartVID][0]
-            rhsEndVID = [rhsID for rhsID,graphID in rhsMapping.items() if graphID == graphEndVID][0]
-
-            if not production.rhs.hasEdgeBetweenVertices(rhsStartVID, rhsEndVID):
+            # Try to find the corresponding starting vertex in the rhs (if it
+            # it exists at all). If it doesn't even exist, then the edge
+            # doesn't exist either, so delete it from graph.
+            rhsStart = [rhsID for rhsID,graphID in rhsMapping.items() if graphID == graphStartVID]
+            if len(rhsStart) == 0:
+                logging.debug('edge start from %s to %s does not appear in rhs' % (lhsEdge[0], lhsEdge[1]))
                 graph.deleteEdge(graphStartVID, graphEndVID)
+                continue
+
+            # Try to find the corresponding ending vertex in the rhs (if it
+            # it exists at all). If it doesn't even exist, then the edge
+            # doesn't exist either, so delete it from graph.
+            rhsEnd = [rhsID for rhsID,graphID in rhsMapping.items() if graphID == graphEndVID]
+            if len(rhsEnd) == 0:
+                logging.debug('edge end from %s to %s does not appear in rhs' % (lhsEdge[0], lhsEdge[1]))
+                graph.deleteEdge(graphStartVID, graphEndVID)
+                continue
+
+            # We found both rhs vertices, but are they connected with an
+            # edge? If not, the delete the edge from graph.
+            if not production.rhs.hasEdgeBetweenVertices(rhsStart[0], rhsEnd[0]):
+                graph.deleteEdge(graphStartVID, graphEndVID)
+
+        logging.debug('graph is now %s' % graph)
 
     #--------------------------------------------------------------------------
     def _deleteMissingVertices(self, graph, production, lhsMapping):

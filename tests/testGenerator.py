@@ -10,7 +10,6 @@ from PGC.Graph.Vertex import Vertex
 
 # TODO: Test Call Graph
 # applyProductions
-#   _applyProduction
 
 class TestGenerator(unittest.TestCase):
 
@@ -85,6 +84,43 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(g._vertices['v0'].label, 'B') # with label B
         self.assertIn('r2', rhsMapping)                # now appears in rhsMapping
         self.assertEqual(rhsMapping['r2'], 'v0')       # r2 mapped to v0 (the newly added vertex) in graph
+
+    #--------------------------------------------------------------------------
+    def testApplyProduction(self):
+        # A basic test that tests all four cases: add and remove vertex,
+        # and add and remove edge.
+
+        # Graph starts with A->B
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        g1 = g._vertices['g1']
+
+        # Production lhs matches A->B
+        lhs = Graph()
+        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+
+        # Production rhs transforma that to A->C.
+        rhs = Graph()
+        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'C'))
+        p = Production(lhs,rhs)
+
+        gen = Generator()
+        gen._applyProduction(g, p, {'l0':'g0','l1':'g1'})
+
+        # g has a new vertex, <v2,C>.
+        self.assertEqual(len(g._vertices), 2)
+        self.assertEqual(g._vertices['v2'].label, 'C')
+
+        # <g0,A> points to <v2,C>
+        self.assertEqual(len(g._edges['g0']), 1)
+        self.assertEqual(g._edges['g0'][0].id, 'v2')
+        self.assertEqual(g._vertices['v2'].label, 'C')
+
+        # <g0,A> no longer points to <g1,B>
+        self.assertNotIn(g1, g._edges['g0'])
+
+        # Vertex <g1,B> has been deleted.
+        self.assertNotIn('g1', g._vertices)
 
     #--------------------------------------------------------------------------
     def testDeleteMissingEdges(self):
@@ -230,11 +266,7 @@ class TestGenerator(unittest.TestCase):
 
 
 
-    #--------------------------------------------------------------------------
-# TODO
-    def XXXtestApplyProductions(self):
-        # Test applyProductions(self, startGraph, productions, config):
-        self.assertTrue(True)
+
 
    #--------------------------------------------------------------------------
     def XXXtestApplyProduction_NoChange(self):
@@ -259,12 +291,7 @@ class TestGenerator(unittest.TestCase):
         gen._applyProduction(graph, production, lhsMapping)
         self.assertEquals(graph.numVertices, 1)
         
-    #--------------------------------------------------------------------------
-# TODO
-    def XXXtestApplyProduction(self):
-        # Test complex change: add/delete edges, add/delete vertices.
 
-        self.assertTrue(True)
  
 # debug, info, warning, error and critical
 if __name__ == '__main__':
