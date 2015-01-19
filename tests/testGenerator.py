@@ -153,6 +153,40 @@ class TestGenerator(unittest.TestCase):
         gen._deleteMissingEdges(g, p, lhsMapping, rhsMapping)
         self.assertEqual(len(g._edges['g0']), 1)
 
+        # lhs has an edge, but the starting vertex doesn't appear in the RHS.
+        # The edge should be deleted from the graph.
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        lhs = Graph()
+        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        rhs = Graph()
+        rhs.addVertex(Vertex('r0', 'C'))
+        rhs.addVertex(Vertex('r1', 'B'))
+        p = Production(lhs,rhs)
+        lhsMapping = {'l0':'g0', 'l1':'g1'}
+        rhsMapping = {'r1':'g1'}
+        gen = Generator()
+        self.assertEqual(len(g._edges['g0']), 1)
+        gen._deleteMissingEdges(g, p, lhsMapping, rhsMapping)
+        self.assertEqual(len(g._edges['g0']), 0)
+
+        # lhs has an edge, but the ending vertex doesn't appear in the RHS.
+        # The edge should be deleted from the graph.
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        lhs = Graph()
+        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        rhs = Graph()
+        rhs.addVertex(Vertex('r0', 'A'))
+        rhs.addVertex(Vertex('r1', 'C'))
+        p = Production(lhs,rhs)
+        lhsMapping = {'l0':'g0', 'l1':'g1'}
+        rhsMapping = {'r0':'g0'}
+        gen = Generator()
+        self.assertEqual(len(g._edges['g0']), 1)
+        gen._deleteMissingEdges(g, p, lhsMapping, rhsMapping)
+        self.assertEqual(len(g._edges['g0']), 0)
+
         # lhs has an edge, but it's gone from the rhs. It should be deleted
         # from the graph.
         g = Graph()
@@ -259,39 +293,6 @@ class TestGenerator(unittest.TestCase):
         self.assertEqual(len(rhsMapping), 1)
         self.assertIn('r1', rhsMapping)
         self.assertEqual(rhsMapping['r1'], 'g1')
-
-
-
-
-
-
-
-
-
-   #--------------------------------------------------------------------------
-    def XXXtestApplyProduction_NoChange(self):
-        # Check that if no changes are specified, no changes are made.
-
-        # Basic graph with one vertex A.
-        graph = Graph()
-        graph.addVertex(Vertex('v1', 'A'))
-
-        # Simple production A ==> A.
-        lhs = Graph()
-        lhs.addVertex(Vertex('u1', 'A'))
-        rhs = Graph()
-        rhs.addVertex(Vertex('u1', 'A'))
-        production = Production(lhs, rhs)
-        
-        lhsMapping = {'u1':'v1'}
-        rhsMapping = {'u1':'v1'}
-
-        # Applying the production should produce no change.
-        gen = Generator()
-        gen._applyProduction(graph, production, lhsMapping)
-        self.assertEquals(graph.numVertices, 1)
-        
-
  
 # debug, info, warning, error and critical
 if __name__ == '__main__':
