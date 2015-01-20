@@ -123,6 +123,76 @@ class TestGenerator(unittest.TestCase):
         self.assertNotIn('g1', g._vertices)
 
     #--------------------------------------------------------------------------
+    def testApplyProduction_Blackbox(self):
+        # Black-box test of _applyProduction.
+
+        # Graph is A->C,D
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'C'))
+        g.addVertex(Vertex('g2', 'D'))
+
+        # Production is A->C,D ==> A->B,C.
+        # This adds vertex B, adds edge from A->B, deletes edge from A->C,
+        # and deletes vertex D.
+        lhs = Graph()
+        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'C'))
+        lhs.addVertex(Vertex('l2', 'D'))
+        rhs = Graph()
+        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        rhs.addVertex(Vertex('r2', 'C'))
+        p = Production(lhs, rhs)
+
+        gen = Generator()
+        gen._applyProduction(g, p, {'l0':'g0','l1':'g1','l2':'g2'})
+
+        self.assertEqual(len(g._vertices), 3)
+
+        # <g0,A> is still in the graph.
+        self.assertIn('g0', g._vertices)
+        self.assertEqual(g._vertices['g0'].label, 'A')
+        # <v3,B> has been added.
+        self.assertIn('v3', g._vertices)
+        self.assertEqual(g._vertices['v3'].label, 'B')
+        # A->B
+        self.assertIn(g._vertices['v3'], g._edges['g0'])
+        # <g1,C> is still in the graph.
+        self.assertIn('g1', g._vertices)
+        self.assertEqual(g._vertices['g1'].label, 'C')
+        # A->C has been removed.
+        self.assertNotIn(g._vertices['g1'], g._edges['g0'])
+        # <g2,D> has been removed.
+        self.assertNotIn('g2', g._vertices)
+
+        # Output looks fine.
+        self.assertEqual(str(g), '[v3 g1 g0 ] <g0,A>-><v3,B>, ')
+
+    #--------------------------------------------------------------------------
+    def testApplyProductions(self):
+        # Start graph already has the minimum number of vertices. Nothing done.
+        g = Graph()
+        c = {'min_vertices':0}
+        gen = Generator()
+        gen.applyProductions(g, None, c)
+        self.assertEqual(len(g._vertices), 0)
+
+        # No matching productions raises an error.
+        c = {'min_vertices':1}
+        self.assertRaises(RuntimeError, gen.applyProductions, g, [], c)
+
+        # When we're done, g has more at least min_vertices.
+        g.addVertex(Vertex('g0', 'A'))
+        c = {'min_vertices':3}
+        # Production is A ==> A->B
+        lhs = Graph()
+        lhs.addVertex(Vertex('l0', 'A'))
+        rhs = Graph()
+        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        p = Production(lhs, rhs)
+        gen.applyProductions(g, [p], c)
+        logging.debug(g)
+        self.assertEqual(len(g._vertices), 3)
+
+    #--------------------------------------------------------------------------
     def testDeleteMissingEdges(self):
         # If lhs has no edges, then there's nothing missing from the rhs.
         # Nothing is done to the graph.
