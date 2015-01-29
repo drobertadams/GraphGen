@@ -8,9 +8,6 @@ from PGC.Graph.Graph import Graph
 from PGC.Production import Production
 from PGC.Graph.Vertex import Vertex
 
-# TODO: Test Call Graph
-# applyProductions
-
 class TestGenerator(unittest.TestCase):
 
     #--------------------------------------------------------------------------
@@ -109,12 +106,12 @@ class TestGenerator(unittest.TestCase):
 
         # g has a new vertex, <v2,C>.
         self.assertEqual(len(g._vertices), 2)
-        self.assertEqual(g._vertices['v2'].label, 'C')
+        self.assertEqual(g._vertices['v1'].label, 'C')
 
         # <g0,A> points to <v2,C>
         self.assertEqual(len(g._edges['g0']), 1)
-        self.assertEqual(g._edges['g0'][0].id, 'v2')
-        self.assertEqual(g._vertices['v2'].label, 'C')
+        self.assertEqual(g._edges['g0'][0].id, 'v1')
+        self.assertEqual(g._vertices['v1'].label, 'C')
 
         # <g0,A> no longer points to <g1,B>
         self.assertNotIn(g1, g._edges['g0'])
@@ -151,10 +148,10 @@ class TestGenerator(unittest.TestCase):
         self.assertIn('g0', g._vertices)
         self.assertEqual(g._vertices['g0'].label, 'A')
         # <v3,B> has been added.
-        self.assertIn('v3', g._vertices)
-        self.assertEqual(g._vertices['v3'].label, 'B')
+        self.assertIn('v2', g._vertices)
+        self.assertEqual(g._vertices['v2'].label, 'B')
         # A->B
-        self.assertIn(g._vertices['v3'], g._edges['g0'])
+        self.assertIn(g._vertices['v2'], g._edges['g0'])
         # <g1,C> is still in the graph.
         self.assertIn('g1', g._vertices)
         self.assertEqual(g._vertices['g1'].label, 'C')
@@ -164,7 +161,7 @@ class TestGenerator(unittest.TestCase):
         self.assertNotIn('g2', g._vertices)
 
         # Output looks fine.
-        self.assertEqual(str(g), '[v3 g1 g0 ] <g0,A>-><v3,B>, ')
+        self.assertEqual(str(g), '[v2 g1 g0 ] <g0,A>-><v2,B>, ')
 
     #--------------------------------------------------------------------------
     def testApplyProductions(self):

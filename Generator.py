@@ -133,10 +133,10 @@ class Generator(object):
         Outputs: None
         """
         rhsMapping = self._mapRHSToGraph(graph, production, lhsMapping)
+        self._deleteMissingVertices(graph, production, lhsMapping)
+        self._deleteMissingEdges(graph, production, lhsMapping, rhsMapping)
         self._addNewVertices(graph, production, rhsMapping)
         self._addNewEdges(graph, production, rhsMapping)
-        self._deleteMissingEdges(graph, production, lhsMapping, rhsMapping)
-        self._deleteMissingVertices(graph, production, lhsMapping)
 
     #--------------------------------------------------------------------------
     def _deleteMissingEdges(self, graph, production, lhsMapping, rhsMapping):
