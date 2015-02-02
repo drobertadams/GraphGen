@@ -7,7 +7,7 @@ import sys
 
 from PGC.Parser import Parser
 from PGC.Lexer import Lexer
-from PGC.Graph.Vertex import Vertex
+from PGC.YapyGraph.Vertex import Vertex
 
 class Generator(object):
     """

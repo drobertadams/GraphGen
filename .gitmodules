@@ -1,0 +1,3 @@
+[submodule "YapyGraph"]
+	path = YapyGraph
+	url = https://github.com/drobertadams/YapyGraph.git

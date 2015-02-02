@@ -4,9 +4,9 @@ import sys
 import unittest
 
 from PGC.Generator import Generator
-from PGC.Graph.Graph import Graph
+from PGC.YapyGraph.Graph import Graph
 from PGC.Production import Production
-from PGC.Graph.Vertex import Vertex
+from PGC.YapyGraph.Vertex import Vertex
 
 class TestGenerator(unittest.TestCase):
 

@@ -1,5 +1,8 @@
 # Procedurally Generated Content
 
+Check out git submodules and put code into github.
+http://git-scm.com/book/en/v2/Git-Tools-Submodules
+
 ## Overview
 
 The goal is to procedurally build a Petri Net (or just "Net") that describes

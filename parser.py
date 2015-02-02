@@ -5,8 +5,8 @@ from Production import Production
 from Lexer import Lexer
 from Token import TokenTypes
 from Token import Token
-from Graph.Graph import Graph
-from Graph.Vertex import Vertex
+from YapyGraph.Graph import Graph
+from YapyGraph.Vertex import Vertex
    
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
