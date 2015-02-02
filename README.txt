@@ -49,7 +49,7 @@ parser and associated lexer. Classes include:
 		}
 		
 - Production - this class provides a simple representation of a graph
-  transformation production (e.g., A->B ==> A->C). The stores the graph on
+  transformation production (e.g., `A->B ==> A->C`). The stores the graph on
   the left-hand side in Production.lhs, and the graph on the right-hand side
   in Production.rhs.
 
@@ -62,11 +62,15 @@ the rhs.  The engine continues to apply these transformations until G contains
 a given number of vertices. This assumes that the productions generally
 increase the number of vertices.
 
-The Generator interprets a production to mean "change the lhs to look like the
-rhs". This means a production of the form "A->B ==> A->C" says to remove B from
-the graph (and the corresponding edge from A), and add a new vertex C (with a
-new corresponding edge from A).
-
 ### Graph Implementation
 
-Graph/ contains an implementation
+Graph/ contains straight-forward labeled graph implementation. In the current
+implementation, only vertices are labeled. It allows adding and removing
+vertices and edges, as well as searching for a given subgraph.
+
+
+
+
+
+- Need to consider numbering nodes. Otherwise how to interpret 
+  `A->B ==> A->B->B` ? But this is clear: `A1->B2 ==> A1->B3->B2`

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# :vim:nowrap
+# vim:nowrap
 
 import logging
 import random
@@ -38,8 +38,7 @@ class Generator(object):
             * config - dictionary of options
         Outputs: None
         """ 
-        while startGraph.numVertices < config['min_vertices']:
-
+        while startGraph.numVertices < int(config['min_vertices']):
             # matchingProductions is a list of (Production, mapping) 
             # pairs where mapping is {vid->vid} dictionary of where 
             # the production's lhs vertices can be found in startGraph.
@@ -49,26 +48,23 @@ class Generator(object):
                 raise RuntimeError('No productions match the given graph.')
 
             (prod, mapping) = random.choice(matchingProductions)
-            logging.debug('Going to apply %s using mapping %s.' % (prod, mapping))
 
             self._applyProduction(startGraph, prod, mapping)
 
     #--------------------------------------------------------------------------
-    def main(self):
+    def generateFromFile(self, filename):
         """
-        To be called from the command line. Checks the command line arguments 
-        for a filename, opens the file, and sends it to the parser.
-        Inputs: None
-        Outputs: None
+        Opens the given grammar file, parses it, then applies its productions
+        to its start graph.
+        Inputs: filename is the name of a graph grammar file
+        Outputs: resulting graph
         """
-        if len(sys.argv) < 2:
-            raise RuntimeError("Usage: %s FILENAME" % sys.argv[0])
-        
-        prodFile = open(sys.argv[1], 'r')
-        p = self._parseGrammarFile(prodFile.read())
-        prodFile.close()
+        grammarFile = open(filename, 'r')
+        f = self._parseGrammarFile(grammarFile.read())
+        grammarFile.close()
 
-        self.applyProductions(p.startGraph, p.productions, p.config)
+        self.applyProductions(f.startGraph, f.productions, f.config)
+        return f.startGraph
 
     #--------------------------------------------------------------------------
     # PRIVATE METHODS - These aren't the methods you're looking for.

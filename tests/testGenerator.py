@@ -337,6 +337,12 @@ class TestGenerator(unittest.TestCase):
         self.assertEquals( len(gen._findMatchingProductions(g, [p1, p2])), 2)
         
     #--------------------------------------------------------------------------
+    def testGenerateFromFile(self):
+        gen = Generator()
+        g = gen.generateFromFile("tests/sample.txt")
+        self.assertEqual(g.numVertices, 10)
+
+    #--------------------------------------------------------------------------
     def testMapRHSToGraph(self):
         # No vertices in rhs. Mapping returned is empty.
         g = Graph()
