@@ -3,10 +3,10 @@ import logging
 import sys
 import unittest
 
-from PGC.Generator import Generator
-from PGC.YapyGraph.Graph import Graph
-from PGC.Production import Production
-from PGC.YapyGraph.Vertex import Vertex
+from Generator import Generator
+from YapyGraph.Graph import Graph
+from Production import Production
+from YapyGraph.Vertex import Vertex
 
 class TestGenerator(unittest.TestCase):
 

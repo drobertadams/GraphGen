@@ -3,8 +3,8 @@
 # Tests for the Lexer class.
 
 import unittest
-from PGC.Lexer import Lexer
-from PGC.Token import TokenTypes
+from Lexer import Lexer
+from Token import TokenTypes
 
 class TestLexer(unittest.TestCase):
 

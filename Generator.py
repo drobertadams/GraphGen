@@ -5,9 +5,9 @@ import logging
 import random
 import sys
 
-from PGC.Parser import Parser
-from PGC.Lexer import Lexer
-from PGC.YapyGraph.Vertex import Vertex
+from Parser import Parser
+from Lexer import Lexer
+from YapyGraph.Vertex import Vertex
 
 class Generator(object):
     """

@@ -1,10 +1,10 @@
 import unittest
 
-from PGC.Lexer import Lexer
-from PGC.Token import TokenTypes
-from PGC.Parser import Parser
-from PGC.YapyGraph.Graph import Graph
-from PGC.YapyGraph.Graph import Vertex
+from Lexer import Lexer
+from Token import TokenTypes
+from Parser import Parser
+from YapyGraph.Graph import Graph
+from YapyGraph.Graph import Vertex
 
 #------------------------------------------------------------------------------
 class TestParser(unittest.TestCase):
