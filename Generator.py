@@ -262,5 +262,8 @@ class Generator(object):
 # debug, info, warning, error and critical
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print >> sys.stderr, "Usage: %s GRAMMAR_FILE" % sys.argv[0]
+        sys.exit(1)
     e = Generator()
-    e.main()
+    e.generateFromFile(sys.argv[1])
