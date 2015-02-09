@@ -48,7 +48,7 @@ class TestLexer(unittest.TestCase):
 
     def testNextToken(self):
         # Test all the acceptable tokens.
-        lex = Lexer('; , { } -> ==> = 123 configuration productions abc')
+        lex = Lexer('; , { } -> ==> = 123 configuration productions abc123')
         self.assertEquals(lex.nextToken().type, TokenTypes.SEMICOLON)
         self.assertEquals(lex.nextToken().type, TokenTypes.COMMA)
         self.assertEquals(lex.nextToken().type, TokenTypes.LBRACE)
