@@ -1,0 +1,13 @@
+# Grammar file for testing.
+
+configuration {
+	min_vertices = 10;
+}
+
+productions {
+	A -> B;	# start graph
+
+	# Productions
+	A -> B ==> A -> C -> B;
+	A -> C ==> A -> B -> C;
+}
