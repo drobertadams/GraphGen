@@ -1,4 +1,5 @@
 import logging
+import re
 import sys
 
 from Production import Production
@@ -138,16 +139,7 @@ class Parser(object):
         """
 
         currentVertexToken = self._match(TokenTypes.ID)
-        currentVertex = graph.findVertexWithLabel(currentVertexToken.text)
-        if currentVertex == None:
-            # graph doesn't contain a vertex with the label.
-            currentVertex = Vertex(
-                'v%d' % graph.numVertices, # vertex id
-                currentVertexToken.text    # vertex label
-            )
-            graph.addVertex(currentVertex)
-            #logging.debug('Created vertex %s' % str(currentVertex))
-            #logging.debug('graph now has %d vertices' % graph.numVertices)
+        currentVertex = self._parseVertexID(currentVertexToken, graph)
 
         while self.lookahead.type == TokenTypes.ARROW:
             self._match(TokenTypes.ARROW)
@@ -155,18 +147,10 @@ class Parser(object):
             # Parse the next vertex in the input, creating a new vertex
             # if needed.
             nextVertexToken = self._match(TokenTypes.ID)
-            nextVertex = graph.findVertexWithLabel(nextVertexToken.text)
-            if nextVertex == None:
-                nextVertex = Vertex(
-                    'v%d' % graph.numVertices, # vertex id
-                    nextVertexToken.text       # vertex label
-                )
-                graph.addVertex(nextVertex)
-                #logging.debug('Created vertex %s' % str(nextVertex))
+            nextVertex = self._parseVertexID(nextVertexToken, graph)
 
             # Connect the first vertex we read with the second one.
             graph.addEdge(currentVertex, nextVertex)
-            #logging.debug('Linked %s and %s' % (currentVertex, nextVertex))
 
             currentVertex = nextVertex
 
@@ -238,3 +222,25 @@ class Parser(object):
         """
         self.startGraph = self._parseGraph()
         self._match(TokenTypes.SEMICOLON)
+
+    #--------------------------------------------------------------------------
+    def _parseVertexID(self, token, graph):
+        """
+        Parses the given token (ID) into a text label and optional
+        vertex number (e.g., "A1"). If a vertex with these two data don't 
+        exist in the given graph, it is added. Otherwise, the existing 
+        vertex from the graph is returned.
+        """
+        label = re.match('[A-z]+', token.text).group(0)
+        match = re.search('[0-9]+$', token.text)
+        number = match.group(0) if match is not None else None
+        vertex = graph.findVertex(label, number)
+        if vertex == None:
+            # graph doesn't contain a vertex with the label.
+            vertex = Vertex(
+                'v%d' % graph.numVertices, # vertex id
+                label, number
+            )
+            graph.addVertex(vertex)
+        return vertex
+ 

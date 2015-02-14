@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# vim:nowrap
 
 import logging
 import random
@@ -202,7 +201,9 @@ class Generator(object):
     #--------------------------------------------------------------------------
     def _findMatchingProductions(self, graph, productions):
         """
-        Finds all the productions whose LHS graph can be found in graph.
+        Finds all the productions whose LHS graph can be found in graph. A
+        production LHS matches if the text-only labels (e.g., "A") and the
+        edges match (i.e., searching doesn't use the vertex number).
         Inputs: 
             * graph - Graph to search
             * productions - list of Production objects to search
@@ -267,3 +268,5 @@ if __name__ == '__main__':
         sys.exit(1)
     e = Generator()
     e.generateFromFile(sys.argv[1])
+
+# vim:nowrap

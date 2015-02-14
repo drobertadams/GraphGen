@@ -1,5 +1,14 @@
 # Procedurally Generated Graphs
 
+## TODO
+
+Add label numbers in production LHS and RHS to help equate the different vertices, as well as identify new
+versus existing vertices. A production could look like: `A1 -> A2 ==> A1 -> A -> A2`. The `A` in the RHS is new and should appear between the two existing productions. This will require the following changes:
+
+- Ensure that Graph.search() only uses the text label.
+- Utilize the vertex number to help equate the LHS and RHS, and to identify new versus existing vertices.
+- Revise and/or create new Generator tests to use vertex numbers.
+
 ## Overview
 
 This Python program allows you to define and execute a _generative graph  grammar_. Its purpose is to programmatically generate a graph. 

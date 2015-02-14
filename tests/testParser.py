@@ -1,6 +1,7 @@
 import unittest
 
 from Lexer import Lexer
+from Token import Token
 from Token import TokenTypes
 from Parser import Parser
 from YapyGraph.Graph import Graph
@@ -272,6 +273,45 @@ class TestParser(unittest.TestCase):
         p._parseProductions()
         self.assertIsNotNone(p.startGraph)
         self.assertEquals(len(p.productions), 1)
+
+    def testParseVertexID(self):
+        p = Parser(Lexer(''))
+
+        # No text label raises an error.
+        g = Graph()
+        t = Token(0, '123')
+        self.assertRaises(AttributeError, p._parseVertexID, t, g)
+
+        # Only a label - doesn't exist in the graph.
+        g = Graph()
+        t = Token(0, 'A')
+        v = p._parseVertexID(t, g)
+        self.assertEqual(v.label, 'A')
+        self.assertIsNone(v.number)
+
+        # Label and a number - not in the graph.
+        g = Graph()
+        t = Token(0, 'A1')
+        v = p._parseVertexID(t, g)
+        self.assertEqual(v.label, 'A')
+        self.assertEqual(v.number, '1')
+
+        # Only a label - already in the graph.
+        g = Graph()
+        u = Vertex('v1', 'A')
+        g.addVertex(u)
+        t = Token(0, 'A')
+        v = p._parseVertexID(t, g)
+        self.assertEqual(v, u)
+
+        # Label and a number - already in the graph.
+        g = Graph()
+        u = Vertex('v1', 'A', '1')
+        g.addVertex(u)
+        t = Token(0, 'A1')
+        v = p._parseVertexID(t, g)
+        self.assertEqual(v, u)
+
 
 if __name__ == '__main__':
     unittest.main()
