@@ -137,7 +137,6 @@ class Generator(object):
         self._addNewEdges(graph, production, rhsMapping)
 
     #--------------------------------------------------------------------------
-# TODO
     def _deleteMissingEdges(self, graph, production, lhsMapping, rhsMapping):
         """
         Deletes edges from graph that appear in production.lhs but not in 
@@ -155,7 +154,7 @@ class Generator(object):
         logging.debug('>>> _deleteMissingEdges <<<')
         for lhsEdge in production.lhs.edges:    # [startVertex,endVertex]
 
-            # Starting and ending vertices of the corresponding edge in graph.
+            # Find the starting and ending vertices of the corresponding edge in graph.
             graphStartVID = lhsMapping[lhsEdge[0].id]
             graphEndVID = lhsMapping[lhsEdge[1].id]
             
@@ -180,6 +179,7 @@ class Generator(object):
             # We found both rhs vertices, but are they connected with an
             # edge? If not, the delete the edge from graph.
             if not production.rhs.hasEdgeBetweenVertices(rhsStart[0], rhsEnd[0]):
+                logging.debug('edge from %s to %s does not appear in rhs' % (lhsEdge[0], lhsEdge[1]))
                 graph.deleteEdge(graphStartVID, graphEndVID)
 
         logging.debug('graph is now %s' % graph)

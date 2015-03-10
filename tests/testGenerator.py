@@ -194,7 +194,7 @@ class TestGenerator(unittest.TestCase):
         # If lhs has no edges, then there's nothing missing from the rhs.
         # Nothing is done to the graph.
         g = Graph()
-        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        g.addEdge(Vertex('g0', 'A', 1), Vertex('g1', 'B', 1))
         lhs = Graph()
         rhs = Graph()
         p = Production(lhs,rhs)
@@ -207,11 +207,11 @@ class TestGenerator(unittest.TestCase):
 
         # lhs has an edge, but it also appears on the rhs. Nothing done.
         g = Graph()
-        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        g.addEdge(Vertex('g0', 'A', 1), Vertex('g1', 'B', 1))
         lhs = Graph()
-        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'B', 1))
         rhs = Graph()
-        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        rhs.addEdge(Vertex('r0', 'A', 1), Vertex('r1', 'B', 1))
         p = Production(lhs,rhs)
         lhsMapping = {'l0':'g0', 'l1':'g1'}
         rhsMapping = {'r0':'g0', 'r1':'g1'}
@@ -223,12 +223,12 @@ class TestGenerator(unittest.TestCase):
         # lhs has an edge, but the starting vertex doesn't appear in the RHS.
         # The edge should be deleted from the graph.
         g = Graph()
-        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        g.addEdge(Vertex('g0', 'A', 1), Vertex('g1', 'B', 1))
         lhs = Graph()
-        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'B', 1))
         rhs = Graph()
-        rhs.addVertex(Vertex('r0', 'C'))
-        rhs.addVertex(Vertex('r1', 'B'))
+        rhs.addVertex(Vertex('r0', 'A', 2))
+        rhs.addVertex(Vertex('r1', 'B', 1))
         p = Production(lhs,rhs)
         lhsMapping = {'l0':'g0', 'l1':'g1'}
         rhsMapping = {'r1':'g1'}
@@ -240,12 +240,12 @@ class TestGenerator(unittest.TestCase):
         # lhs has an edge, but the ending vertex doesn't appear in the RHS.
         # The edge should be deleted from the graph.
         g = Graph()
-        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        g.addEdge(Vertex('g0', 'A', 1), Vertex('g1', 'B', 1))
         lhs = Graph()
-        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'B', 1))
         rhs = Graph()
-        rhs.addVertex(Vertex('r0', 'A'))
-        rhs.addVertex(Vertex('r1', 'C'))
+        rhs.addVertex(Vertex('r0', 'A', 1))
+        rhs.addVertex(Vertex('r1', 'B', 2))
         p = Production(lhs,rhs)
         lhsMapping = {'l0':'g0', 'l1':'g1'}
         rhsMapping = {'r0':'g0'}
@@ -257,12 +257,12 @@ class TestGenerator(unittest.TestCase):
         # lhs has an edge, but it's gone from the rhs. It should be deleted
         # from the graph.
         g = Graph()
-        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
+        g.addEdge(Vertex('g0', 'A', 1), Vertex('g1', 'B', 1))
         lhs = Graph()
-        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'B', 1))
         rhs = Graph()
-        rhs.addVertex(Vertex('r0', 'A'))
-        rhs.addVertex(Vertex('r1', 'B'))
+        rhs.addVertex(Vertex('r0', 'A', 1))
+        rhs.addVertex(Vertex('r1', 'B', 1))
         p = Production(lhs,rhs)
         lhsMapping = {'l0':'g0', 'l1':'g1'}
         rhsMapping = {'r0':'g0', 'r1':'g1'}
