@@ -275,29 +275,29 @@ class TestGenerator(unittest.TestCase):
     def testDeleteMissingVertices(self):
         # lhs has no vertices(!). Nothing done.
         g = Graph()
-        gcopy = copy.deepcopy(g)
         lhs = Graph()
         rhs = Graph()
         p = Production(lhs, rhs)
         gen = Generator()
         gen._deleteMissingVertices(g, p, {})
-        self.assertEqual(g.__dict__, gcopy.__dict__)
+        self.assertEqual(len(g._vertices), 0)
 
         # lhs has vertices, but they all appear in the rhs. Nothing done.
-        lhs.addVertex(Vertex('l0', 'A'))
-        rhs.addVertex(Vertex('r0', 'A'))
-        gen._deleteMissingVertices(g, p, {})
-        self.assertEqual(g.__dict__, gcopy.__dict__)
-
-        # lhs has vertices that don't appear in the rhs. They should be
-        # deleted from g.
-        g.addVertex(Vertex('g0', 'A'))
-        rhs = Graph()
+        g.addVertex(Vertex('g0', 'A', 1))
+        lhs.addVertex(Vertex('l0', 'A', 1))
+        rhs.addVertex(Vertex('r0', 'A', 1))
         p = Production(lhs, rhs)
         gen._deleteMissingVertices(g, p, {'l0':'g0'})
-        self.assertEqual(len(g._vertices), 0)
-        self.assertEqual(len(g._edges), 0)
-        self.assertEqual(len(g._neighbors), 0)
+        self.assertEqual(len(g._vertices), 1)
+
+        # lhs has a vertex (A2) that don't appear in the rhs. It should be
+        # deleted from g.
+        g.addVertex(Vertex('g1', 'A', 2))
+        lhs.addVertex(Vertex('l1', 'A', 2))
+        p = Production(lhs, rhs)
+        self.assertEqual(len(g._vertices), 2)
+        gen._deleteMissingVertices(g, p, {'l0':'g0', 'l1':'g1'})
+        self.assertEqual(len(g._vertices), 1)
 
     #--------------------------------------------------------------------------
     def testFindMatchingProductions(self):
@@ -321,7 +321,7 @@ class TestGenerator(unittest.TestCase):
         g = Graph()
         g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
         lhs = Graph()
-        lhs.addVertex(Vertex('u1', 'A'))
+        lhs.addVertex(Vertex('u1', 'A', '1'))
         rhs = Graph()
         p1 = Production(lhs, rhs)
         self.assertEquals( len(gen._findMatchingProductions(g, [p1])), 1)
@@ -330,7 +330,7 @@ class TestGenerator(unittest.TestCase):
         g = Graph()
         g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
         lhs = Graph()
-        lhs.addVertex(Vertex('u1', 'A'))
+        lhs.addVertex(Vertex('u2', 'A', '2'))
         rhs = Graph()
         p1 = Production(lhs, rhs)
         p2 = Production(lhs, rhs)
@@ -355,18 +355,18 @@ class TestGenerator(unittest.TestCase):
 
         # rhs has vertex r1, but it doesn't appear in the lhs. Mapping returned
         # is empty.
-        rhs.addVertex(Vertex('r1', 'A'))
+        rhs.addVertex(Vertex('r1', 'A', '1'))
         rhsMapping = gen._mapRHSToGraph(g, p, {})
         self.assertEqual(len(rhsMapping), 0)
 
         # rhs vertex r1 also appears in lhs as l1, which is mapped to g1. 
         # r1 should appear in rhsMapping mapped to g1.
-        lhs.addVertex(Vertex('l1', 'A'))
+        lhs.addVertex(Vertex('l1', 'A', '1'))
         rhsMapping = gen._mapRHSToGraph(g, p, {'l1':'g1'})
         self.assertEqual(len(rhsMapping), 1)
         self.assertIn('r1', rhsMapping)
         self.assertEqual(rhsMapping['r1'], 'g1')
- 
+
 # debug, info, warning, error and critical
 if __name__ == '__main__':
 	logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)

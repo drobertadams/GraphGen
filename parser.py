@@ -234,7 +234,8 @@ class Parser(object):
         label = re.match('[A-z]+', token.text).group(0)
         match = re.search('[0-9]+$', token.text)
         number = match.group(0) if match is not None else None
-        vertex = graph.findVertex(label, number)
+        name = Vertex.makeName(label, number)
+        vertex = graph.findVertex(name)
         if vertex == None:
             # graph doesn't contain a vertex with the label.
             vertex = Vertex(

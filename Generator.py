@@ -68,6 +68,7 @@ class Generator(object):
     #--------------------------------------------------------------------------
     # PRIVATE METHODS - These aren't the methods you're looking for.
     #--------------------------------------------------------------------------
+# TODO
     def _addNewEdges(self, graph, production, rhsMapping):
         """
         Adds edges to graph that appear in production.rhs but not in 
@@ -90,6 +91,7 @@ class Generator(object):
 
 
     #--------------------------------------------------------------------------
+# TODO
     def _addNewVertices(self, graph, production, rhsMapping):
         """
         Adds vertices to graph that appear in production.rhs but not in 
@@ -114,6 +116,7 @@ class Generator(object):
         logging.debug('graph is now %s' % graph)
 
     #--------------------------------------------------------------------------
+# TODO
     def _applyProduction(self, graph, production, lhsMapping):
         """
         Applies the given production to the given graph. The general idea is to
@@ -134,6 +137,7 @@ class Generator(object):
         self._addNewEdges(graph, production, rhsMapping)
 
     #--------------------------------------------------------------------------
+# TODO
     def _deleteMissingEdges(self, graph, production, lhsMapping, rhsMapping):
         """
         Deletes edges from graph that appear in production.lhs but not in 
@@ -194,7 +198,7 @@ class Generator(object):
         Outputs: None
         """
         for lhsVertex in production.lhs.vertices:
-            if not production.rhs.findVertexWithLabel(lhsVertex.label):
+            if not production.rhs.findVertex(lhsVertex.name):
                 graphVertexID = lhsMapping[lhsVertex.id]
                 graph.deleteVertex(graphVertexID)
 
@@ -232,7 +236,9 @@ class Generator(object):
         appear in the lhs, we use the lhsMapping to determine which graph
         vertex the rhs vertex maps to. For rhs vertices that are new (i.e.,
         don't exist in the lhs), we ignore them for now and update the
-        rhs mapping when we add the new vertices to graph.
+        rhs mapping when we add the new vertices to graph. LHS and RHS 
+        vertices are considered the same if both their label and their
+        number match.
         Inputs:
             * graph - Graph to which to apply the production
             * production - Production to apply
@@ -243,8 +249,8 @@ class Generator(object):
         rhsMapping = {}
 
         for rhsVertex in production.rhs.vertices:
-            if rhsVertex.label in production.lhs.labels:
-                lhsVertex = production.lhs.findVertexWithLabel(rhsVertex.label)
+            if rhsVertex.name in production.lhs.names:
+                lhsVertex = production.lhs.findVertex(rhsVertex.name)
                 rhsMapping[rhsVertex.id] = lhsMapping[lhsVertex.id] 
         return rhsMapping
 
