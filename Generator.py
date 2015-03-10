@@ -68,7 +68,6 @@ class Generator(object):
     #--------------------------------------------------------------------------
     # PRIVATE METHODS - These aren't the methods you're looking for.
     #--------------------------------------------------------------------------
-# TODO
     def _addNewEdges(self, graph, production, rhsMapping):
         """
         Adds edges to graph that appear in production.rhs but not in 
@@ -88,7 +87,6 @@ class Generator(object):
             if not graph.hasEdgeBetweenVertices(graphStartVID, graphEndVID):
                 graph.addEdge(graphStartVID, graphEndVID)
         logging.debug('graph is now %s' % graph)
-
 
     #--------------------------------------------------------------------------
     def _addNewVertices(self, graph, production, rhsMapping):

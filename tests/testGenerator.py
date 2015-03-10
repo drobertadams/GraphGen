@@ -28,7 +28,7 @@ class TestGenerator(unittest.TestCase):
         g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
         lhs = Graph()
         rhs = Graph()
-        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        rhs.addEdge(Vertex('r0', 'A', 1), Vertex('r1', 'B', 1))
         p = Production(lhs,rhs)
         rhsMapping = {'r0':'g0', 'r1':'g1'}
         gen = Generator()
@@ -42,7 +42,7 @@ class TestGenerator(unittest.TestCase):
         g.addVertex(Vertex('g1', 'B'))
         lhs = Graph()
         rhs = Graph()
-        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        rhs.addEdge(Vertex('r0', 'A', 1), Vertex('r1', 'B', 1))
         p = Production(lhs,rhs)
         rhsMapping = {'r0':'g0', 'r1':'g1'}
         gen = Generator()
