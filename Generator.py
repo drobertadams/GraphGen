@@ -91,7 +91,6 @@ class Generator(object):
 
 
     #--------------------------------------------------------------------------
-# TODO
     def _addNewVertices(self, graph, production, rhsMapping):
         """
         Adds vertices to graph that appear in production.rhs but not in 
@@ -107,10 +106,10 @@ class Generator(object):
         """
         logging.debug('>>> _addNewVertices <<<')
         for rhsVertex in production.rhs.vertices:
-            if rhsVertex.label not in production.lhs.labels:
-                logging.debug('label %s in rhs but not lhs' % rhsVertex.label)
+            if rhsVertex.name not in production.lhs.names:
+                logging.debug('name %s in rhs but not lhs' % rhsVertex.label)
                 newVertexID = 'v%s' % graph.numVertices
-                newVertex = graph.addVertex(Vertex(newVertexID, rhsVertex.label))
+                newVertex = graph.addVertex(Vertex(newVertexID, rhsVertex.label, rhsVertex.number))
                 logging.debug('added vertex %s' % newVertex)
                 rhsMapping[rhsVertex.id] = newVertexID
         logging.debug('graph is now %s' % graph)

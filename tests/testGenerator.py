@@ -65,20 +65,21 @@ class TestGenerator(unittest.TestCase):
         
         # Production rhs has vertices, but they all appear in the LHS. Hence
         # they aren't new and nothing is done.
-        lhs.addVertex(Vertex('l1', 'A'))
-        rhs.addVertex(Vertex('r1', 'A'))
+        lhs.addVertex(Vertex('l1', 'A', 1))
+        rhs.addVertex(Vertex('r1', 'A', 1))
         self.assertEqual(len(g._vertices), 0)
         gen._addNewVertices(g, p, {})
         self.assertEqual(len(g._vertices), 0)
 
         # rhs has one new vertex not in the lhs.
         rhsMapping = {}
-        rhs.addVertex(Vertex('r2', 'B'))
+        rhs.addVertex(Vertex('r2', 'B', 2))
         self.assertEqual(len(g._vertices), 0)
         gen._addNewVertices(g, p, rhsMapping)
         self.assertEqual(len(g._vertices), 1)
         self.assertIn('v0', g._vertices)               # new vertex is v0
         self.assertEqual(g._vertices['v0'].label, 'B') # with label B
+        self.assertEqual(g._vertices['v0'].number, 2)  # with number 2
         self.assertIn('r2', rhsMapping)                # now appears in rhsMapping
         self.assertEqual(rhsMapping['r2'], 'v0')       # r2 mapped to v0 (the newly added vertex) in graph
 
