@@ -95,11 +95,11 @@ class TestGenerator(unittest.TestCase):
 
         # Production lhs matches A->B
         lhs = Graph()
-        lhs.addEdge(Vertex('l0', 'A'), Vertex('l1', 'B'))
+        lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'B', 1))
 
         # Production rhs transforma that to A->C.
         rhs = Graph()
-        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'C'))
+        rhs.addEdge(Vertex('r0', 'A', 1), Vertex('r1', 'C'))
         p = Production(lhs,rhs)
 
         gen = Generator()
@@ -163,6 +163,58 @@ class TestGenerator(unittest.TestCase):
 
         # Output looks fine.
         self.assertEqual(str(g), '[v2 g1 g0 ] <g0,A>-><v2,B>, ')
+
+#--------------------------------------------------------------------------
+    def testApplyProduction_Blackbox2(self):
+        # Another black-box test of _applyProduction.
+
+        # Graph is A->A,D
+        g = Graph()
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'A'))
+        g.addEdge('g0', Vertex('g2', 'D'))
+
+        # Production is A1->A2 ==> A1->A->A2.
+        # This production adds a new vertex "A" between the existing As,
+        # leaving the first A still pointing to D.
+        lhs = Graph()
+        lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'A', 2))
+        rhs = Graph()
+        rhs.addEdge(Vertex('r0', 'A', 1), Vertex('r1', 'A'))
+        rhs.addEdge('r1', Vertex('r2', 'A', 2))
+        p = Production(lhs, rhs)
+
+        gen = Generator()
+        gen._applyProduction(g, p, {'l0':'g0','l1':'g1'})
+
+        self.assertEqual(len(g._vertices), 4)
+
+        # <g0,A> is still in the graph.
+        self.assertIn('g0', g._vertices)
+        self.assertEqual(g._vertices['g0'].label, 'A')
+
+        # <v3,A> has been added.
+        self.assertIn('v3', g._vertices)
+        self.assertEqual(g._vertices['v3'].label, 'A')
+        
+        # g0->v3
+        self.assertIn(g._vertices['v3'], g._edges['g0'])
+
+        # <g1,A> is still in the graph.
+        self.assertIn('g1', g._vertices)
+        self.assertEqual(g._vertices['g1'].label, 'A')
+
+        # <g2,D> is still in the graph.
+        self.assertIn('g2', g._vertices)
+        self.assertEqual(g._vertices['g2'].label, 'D')
+        
+        # <g0,A>-><g2,D>
+        self.assertIn(g._vertices['g2'], g._edges['g0'])
+
+        # g0->v3
+        self.assertIn(g._vertices['v3'], g._edges['g0'])
+
+        # Output looks fine: A1->A->A, A1->D
+        self.assertEqual(str(g), '[v3 g2 g1 g0 ] <v3,A>-><g1,A>, <g0,A>-><g2,D>, <g0,A>-><v3,A>, ')
 
     #--------------------------------------------------------------------------
     def testApplyProductions(self):

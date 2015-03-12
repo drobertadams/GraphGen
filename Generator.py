@@ -113,7 +113,6 @@ class Generator(object):
         logging.debug('graph is now %s' % graph)
 
     #--------------------------------------------------------------------------
-# TODO
     def _applyProduction(self, graph, production, lhsMapping):
         """
         Applies the given production to the given graph. The general idea is to
@@ -177,6 +176,7 @@ class Generator(object):
             # edge? If not, the delete the edge from graph.
             if not production.rhs.hasEdgeBetweenVertices(rhsStart[0], rhsEnd[0]):
                 logging.debug('edge from %s to %s does not appear in rhs' % (lhsEdge[0], lhsEdge[1]))
+                logging.debug('deleting edge from %s to %s' % (graphStartVID, graphEndVID))
                 graph.deleteEdge(graphStartVID, graphEndVID)
 
         logging.debug('graph is now %s' % graph)
@@ -194,9 +194,11 @@ class Generator(object):
                     and graph
         Outputs: None
         """
+        logging.debug('>>> _deleteMissingVertices <<<')
         for lhsVertex in production.lhs.vertices:
             if not production.rhs.findVertex(lhsVertex.name):
                 graphVertexID = lhsMapping[lhsVertex.id]
+                logging.debug('deleting vertex %s' % graphVertexID)
                 graph.deleteVertex(graphVertexID)
 
     #--------------------------------------------------------------------------
