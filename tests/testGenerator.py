@@ -206,7 +206,7 @@ class TestGenerator(unittest.TestCase):
         # <g2,D> is still in the graph.
         self.assertIn('g2', g._vertices)
         self.assertEqual(g._vertices['g2'].label, 'D')
-        
+
         # <g0,A>-><g2,D>
         self.assertIn(g._vertices['g2'], g._edges['g0'])
 
@@ -230,17 +230,18 @@ class TestGenerator(unittest.TestCase):
         self.assertRaises(RuntimeError, gen.applyProductions, g, [], c)
 
         # When we're done, g has more at least min_vertices.
-        g.addVertex(Vertex('g0', 'A'))
-        c = {'min_vertices':3}
-        # Production is A ==> A->B
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'A'))
+        c = {'min_vertices':10}
+        # Production is A1->A2 ==> A1->A->A2
         lhs = Graph()
-        lhs.addVertex(Vertex('l0', 'A'))
+        lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'A', 2))
         rhs = Graph()
-        rhs.addEdge(Vertex('r0', 'A'), Vertex('r1', 'B'))
+        rhs.addEdge(Vertex('r0', 'A', 1), Vertex('r1', 'A'))
+        rhs.addEdge('r1', Vertex('r2', 'A', 2))
         p = Production(lhs, rhs)
         gen.applyProductions(g, [p], c)
         logging.debug(g)
-        self.assertEqual(len(g._vertices), 3)
+        self.assertEqual(len(g._vertices), 10)
 
     #--------------------------------------------------------------------------
     def testDeleteMissingEdges(self):
