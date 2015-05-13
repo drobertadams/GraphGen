@@ -97,7 +97,7 @@ class TestGenerator(unittest.TestCase):
         lhs = Graph()
         lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'B', 1))
 
-        # Production rhs transforma that to A->C.
+        # Production rhs transforms that to A->C
         rhs = Graph()
         rhs.addEdge(Vertex('r0', 'A', 1), Vertex('r1', 'C'))
         p = Production(lhs,rhs)
@@ -166,7 +166,8 @@ class TestGenerator(unittest.TestCase):
 
 #--------------------------------------------------------------------------
     def testApplyProduction_Blackbox2(self):
-        # Another black-box test of _applyProduction.
+        # Another black-box test of _applyProduction this time with
+        # numbered vertices.
 
         # Graph is A->A,D
         g = Graph()
@@ -176,6 +177,7 @@ class TestGenerator(unittest.TestCase):
         # Production is A1->A2 ==> A1->A->A2.
         # This production adds a new vertex "A" between the existing As,
         # leaving the first A still pointing to D.
+        # Resulting graph: A1->A3->A2; A1->D
         lhs = Graph()
         lhs.addEdge(Vertex('l0', 'A', 1), Vertex('l1', 'A', 2))
         rhs = Graph()
@@ -186,6 +188,7 @@ class TestGenerator(unittest.TestCase):
         gen = Generator()
         gen._applyProduction(g, p, {'l0':'g0','l1':'g1'})
 
+        # Result has 4 vertices.
         self.assertEqual(len(g._vertices), 4)
 
         # <g0,A> is still in the graph.

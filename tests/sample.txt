@@ -5,8 +5,10 @@ configuration {
 }
 
 productions {
-	A;	# start graph
+    A1->A4; # Start graph. The numbers here do not have to match the numbers
+            # in the production below. But they are necessary to ensure that
+            # two 'A' vertices are created.
 
 	# Productions
-	A ==> A -> B;
+    A1->A2 ==> A1->A->A2;
 }

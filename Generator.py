@@ -260,7 +260,6 @@ class Generator(object):
         Inputs: grammarFile - string contents of a graph grammar file
         Outputs: Parser after it has parsed the given input
         """
-
         p = Parser(Lexer(grammarFile))
         p.parse()
         return p
