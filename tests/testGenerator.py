@@ -162,7 +162,7 @@ class TestGenerator(unittest.TestCase):
         self.assertNotIn('g2', g._vertices)
 
         # Output looks fine.
-        self.assertEqual(str(g), '[v2 g1 g0 ] <g0,A>-><v2,B>, ')
+        self.assertEqual(str(g), 'digraph {\nA->B;\n\n}')
 
 #--------------------------------------------------------------------------
     def testApplyProduction_Blackbox2(self):
@@ -217,7 +217,7 @@ class TestGenerator(unittest.TestCase):
         self.assertIn(g._vertices['v3'], g._edges['g0'])
 
         # Output looks fine: A1->A->A, A1->D
-        self.assertEqual(str(g), '[v3 g2 g1 g0 ] <v3,A>-><g1,A>, <g0,A>-><g2,D>, <g0,A>-><v3,A>, ')
+        self.assertEqual(str(g), 'digraph {\nA->A;\nA->D;\nA->A;\n\n}')
 
     #--------------------------------------------------------------------------
     def testApplyProductions(self):
