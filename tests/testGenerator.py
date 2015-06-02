@@ -162,14 +162,14 @@ class TestGenerator(unittest.TestCase):
         self.assertNotIn('g2', g._vertices)
 
         # Output looks fine.
-        self.assertEqual(str(g), 'digraph {\nA->B;\n\n}')
+        self.assertEqual(str(g), 'digraph {\nA_g0->B_v2;\n\n}')
 
 #--------------------------------------------------------------------------
     def testApplyProduction_Blackbox2(self):
         # Another black-box test of _applyProduction this time with
         # numbered vertices.
 
-        # Graph is A->A,D
+        # Graph is A0->A1,A0->D
         g = Graph()
         g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'A'))
         g.addEdge('g0', Vertex('g2', 'D'))
@@ -217,7 +217,36 @@ class TestGenerator(unittest.TestCase):
         self.assertIn(g._vertices['v3'], g._edges['g0'])
 
         # Output looks fine: A1->A->A, A1->D
-        self.assertEqual(str(g), 'digraph {\nA->A;\nA->D;\nA->A;\n\n}')
+        self.assertEqual(str(g), 'digraph {\nA_v3->A_g1;\nA_g0->D_g2;\nA_g0->A_v3;\n\n}')
+
+#--------------------------------------------------------------------------
+    def testApplyProduction_Blackbox3(self):
+        # Another black-box test. This time with a split LHS: A->B,A->C
+
+        input = """
+        # Grammar file for testing.
+
+        configuration {
+            min_vertices = 4;
+        }
+
+        productions {
+            # Start graph
+            A->B, A->C;
+
+            # Productions
+            A->C, A->B ==> A->D->C, A->B;
+        }
+"""
+
+        gen = Generator()
+        f = gen._parseGrammarFile(input)
+        logging.debug('start graph is...')
+        logging.debug(f.startGraph)
+
+        gen.applyProductions(f.startGraph, f.productions, f.config)
+
+        self.assertEqual(f.startGraph.numVertices, 5)
 
     #--------------------------------------------------------------------------
     def testApplyProductions(self):

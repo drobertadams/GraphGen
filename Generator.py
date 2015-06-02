@@ -37,6 +37,7 @@ class Generator(object):
             * config - dictionary of options
         Outputs: None
         """ 
+        logging.debug('In applyProductions')
         while startGraph.numVertices < int(config['min_vertices']):
             # matchingProductions is a list of (Production, mapping) 
             # pairs where mapping is {vid->vid} dictionary of where 
@@ -214,9 +215,10 @@ class Generator(object):
             is a Production whose LHS can be found in graph, and mapping is
             a {vid->vid} dictionary (LHS->graph) of where the LHS can be found.
         """
+        logging.debug('In _findMatchingProductions')
         solutions = []
         for prod in productions:
-            logging.debug('Checking production %s ' % prod.lhs)
+            logging.debug('Checking production LHS %s ' % prod.lhs)
 
             # Find all places where prod.lhs can be found in graph.
             listOfMatches = graph.search(prod.lhs)
@@ -226,6 +228,7 @@ class Generator(object):
                     logging.debug('Production %s matches' % prod.lhs)
             else:
                     logging.debug('Production %s does not match' % prod.lhs)
+        logging.debug('Out _findMatchingProductions')
         return solutions
 
     #--------------------------------------------------------------------------
