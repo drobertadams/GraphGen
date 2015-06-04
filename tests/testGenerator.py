@@ -246,7 +246,7 @@ class TestGenerator(unittest.TestCase):
 
         gen.applyProductions(f.startGraph, f.productions, f.config)
 
-        self.assertEqual(f.startGraph.numVertices, 5)
+        self.assertEqual(f.startGraph.numVertices, 4)
 
     #--------------------------------------------------------------------------
     def testApplyProductions(self):
@@ -395,9 +395,9 @@ class TestGenerator(unittest.TestCase):
         # We have a production, but the LHS can't be found in the graph.
         # No solutions.
         g = Graph()
-        g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
         lhs = Graph()
-        lhs.addEdge(Vertex('v1', 'C'), Vertex('v1', 'D'))
+        lhs.addEdge(Vertex('g0', 'C'), Vertex('g1', 'D'))
         rhs = Graph()
         p1 = Production(lhs, rhs)
         gen = Generator()
@@ -405,18 +405,18 @@ class TestGenerator(unittest.TestCase):
 
         # One matching production, a simple vertex "A".
         g = Graph()
-        g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
         lhs = Graph()
-        lhs.addVertex(Vertex('u1', 'A', '1'))
+        lhs.addVertex(Vertex('g0', 'A', '1'))
         rhs = Graph()
         p1 = Production(lhs, rhs)
         self.assertEquals( len(gen._findMatchingProductions(g, [p1])), 1)
 
         # Two matching productions.
         g = Graph()
-        g.addEdge(Vertex('u1', 'A'), Vertex('u2', 'B'))
+        g.addEdge(Vertex('g0', 'A'), Vertex('g1', 'B'))
         lhs = Graph()
-        lhs.addVertex(Vertex('u2', 'A', '2'))
+        lhs.addVertex(Vertex('g0', 'A', '2'))
         rhs = Graph()
         p1 = Production(lhs, rhs)
         p2 = Production(lhs, rhs)
