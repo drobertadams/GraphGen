@@ -248,6 +248,38 @@ class TestGenerator(unittest.TestCase):
 
         self.assertEqual(f.startGraph.numVertices, 4)
 
+#--------------------------------------------------------------------------
+    def testApplyProduction_Blackbox4(self):
+        # More complex black-box test. This time we have several productions
+        # in various configurations, and we build a big graph (50 vertices).
+
+        input = """
+        configuration {
+            min_vertices = 50;
+        }
+
+        productions {
+            # Start graph
+            A->B, A->C;
+
+            # Productions
+            A->C, A->B ==> A->D->C, A->B;
+            A->D ==> A->D->E;
+            D->E ==> D->F->E, D->G;
+            G ==> G->A->D;
+        }
+"""
+
+        gen = Generator()
+        f = gen._parseGrammarFile(input)
+        logging.debug('start graph is...')
+        logging.debug(f.startGraph)
+
+        gen.applyProductions(f.startGraph, f.productions, f.config)
+
+        logging.info(f.startGraph)
+        self.assertEqual(f.startGraph.numVertices, 50)
+
     #--------------------------------------------------------------------------
     def testApplyProductions(self):
         # Start graph already has the minimum number of vertices. Nothing done.
