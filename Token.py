@@ -26,7 +26,8 @@ class TokenTypes(object):
 class Token(object):
     """An abstract token."""
     
-    def __init__(self, type, text):
+    #--------------------------------------------------------------------------
+    def __init__(self, type:int, text:str):
         """Constructor.
            type is a numeric token type from TokenTypes
            text is the lexeme
@@ -34,6 +35,7 @@ class Token(object):
         self.type = type
         self.text = text
         
+    #--------------------------------------------------------------------------
     def __str__(self):
-    	"""Converts a token to string."""
-        return "<'%s', %s>" % (self.text, TokenTypes.names[self.type])
+        """Converts a token to string."""
+        return( "<'%s', %s>" % (self.text, TokenTypes.names[self.type]) )

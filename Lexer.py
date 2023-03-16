@@ -1,32 +1,40 @@
 from Token import TokenTypes
 from Token import Token
-                         
+
+#------------------------------------------------------------------------------
+#   _                       
+#  | |    _____  _____ _ __ 
+#  | |   / _ \ \/ / _ \ '__|
+#  | |__|  __/>  <  __/ |   
+#  |_____\___/_/\_\___|_|   
+#  
 class Lexer(object):
     """
     Lexer for the graph productions parser.
     """
     
     #--------------------------------------------------------------------------
-    def __init__(self, str):
+    def __init__(self, input: str):
         """Constructor.
            str is the input to the lexer
         """
-        self.input = str    # input string
+        self.input = input    # input string
         self.p = 0          # index of current character within self.input
         self.lineNum = 1    # current line number
         self.charNum = 1    # current character number within the line
  
         # Initialize the current character (self.c)
-        if len(str) != 0:
+        if len(input) != 0:
             self.c = self.input[self.p]
         else:
             self.c = TokenTypes.EOF
                
     #--------------------------------------------------------------------------
-    def nextToken(self):
+    def nextToken(self) -> Token:
         """Return the next Token in the input stream, ignoring whitespace."""
         while self.c != TokenTypes.EOF:
             if self.c in [' ', '\t', '\n', '\r']:
+                # Ignore whitespace.
                 self._consume()
             elif self.c == ';':
                 self._consume()
@@ -41,7 +49,7 @@ class Lexer(object):
                 self._consume()
                 return Token(TokenTypes.RBRACE, '}')
             elif self.c == '-':
-                # '->'' is an ARROW, '-' followed by anything else is invalid.
+                # '->' is an ARROW, '-' followed by anything else is invalid.
                 self._consume()
                 if self.c == '>':
                     self._consume()
@@ -96,7 +104,7 @@ class Lexer(object):
     #--------------------------------------------------------------------------
     # PRIVATE METHODS - These aren't the methods you're looking for.
     #--------------------------------------------------------------------------
-    def _consume(self):
+    def _consume(self) -> None:
         """Advance to the next character of input, or EOF."""
         # Update line number and character number.
         if self.c in ['\n', '\r']:
@@ -113,7 +121,7 @@ class Lexer(object):
             self.c = self.input[self.p]
 
     #--------------------------------------------------------------------------
-    def _error(self):
+    def _error(self) -> None:
         """Raises an exception indicating that the current character is
            invalid.
         """

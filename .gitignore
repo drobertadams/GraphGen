@@ -1,2 +1,11 @@
 .DS_Store
 *.pyc
+bin
+lib
+include
+man
+*.cfg
+pyrightconfig.json
+YapyGraph
+.gitmodules
+.gitignore

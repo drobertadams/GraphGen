@@ -4,12 +4,13 @@ from Lexer import Lexer
 from Token import Token
 from Token import TokenTypes
 from Parser import Parser
-from YapyGraph.Graph import Graph
-from YapyGraph.Graph import Vertex
+from YapyGraph import Graph
+from YapyGraph import Vertex
 
 #------------------------------------------------------------------------------
 class TestParser(unittest.TestCase):
 
+    #------------------------------------------------------------------------------
     def testConstructor(self):
         l = Lexer('')
         p = Parser(l)
@@ -19,15 +20,18 @@ class TestParser(unittest.TestCase):
         self.assertIsNone(p.startGraph)
         self.assertEqual(p._numVerticesParsed, 0)
 
+    #------------------------------------------------------------------------------
     def testConsume(self):
         p = Parser( Lexer('{ }') )
         p._consume()
         self.assertEqual(p.lookahead.type, TokenTypes.RBRACE)
 
+    #------------------------------------------------------------------------------
     def testError(self):
         p = Parser( Lexer("") )
         self.assertRaises(SyntaxError, p._error, 'foo')
 
+    #------------------------------------------------------------------------------
     def testMatch(self):
         p = Parser( Lexer('{ }') )
 
@@ -39,6 +43,7 @@ class TestParser(unittest.TestCase):
         # Not finding a match raises an error.
         self.assertRaises(SyntaxError, p._match, TokenTypes.SEMICOLON)
 
+    #------------------------------------------------------------------------------
     def testParse(self):
         # An overall parser sanity check.
         p = Parser(Lexer("""
@@ -63,6 +68,7 @@ class TestParser(unittest.TestCase):
         self.assertIsNotNone(p.startGraph)
         self.assertEquals(len(p.productions), 3)
 
+    #------------------------------------------------------------------------------
     def testParseConfig(self):
         # config -> ID '=' (ID | NUMBER)
 
@@ -95,6 +101,7 @@ class TestParser(unittest.TestCase):
         self.assertTrue('C' in p.config)
         self.assertEquals(p.config['C'], '123')
 
+    #------------------------------------------------------------------------------
     def testParseConfigList(self):
         # config_list -> config ';' config_list | nil
 
@@ -114,6 +121,7 @@ class TestParser(unittest.TestCase):
         p = Parser(l)
         self.assertRaises(SyntaxError, p._parseConfigList)
 
+    #------------------------------------------------------------------------------
     def testParseConfiguration(self):
         # configuration -> 'configuration' '{' config_list '}'
 
@@ -144,6 +152,7 @@ class TestParser(unittest.TestCase):
         p._parseConfiguration()
         self.assertEquals(p.config['A'], 'B')
 
+    #------------------------------------------------------------------------------
     def testParseEdgeList(self):
         # edgeList -> ID | ID '->' edgeList
 
@@ -179,6 +188,7 @@ class TestParser(unittest.TestCase):
         self.assertEquals(g._vertices['v1'].label, 'B')
         self.assertEquals(g._edges['v0'][0].label, 'B')
 
+    #------------------------------------------------------------------------------
     def testParseGraph(self):
         # graph -> edge_list | edge_list ',' graph"""
 
@@ -195,6 +205,7 @@ class TestParser(unittest.TestCase):
         self.assertEquals(g._edges['v0'][0].id, 'v1') # A points to B
         self.assertEquals(g._edges['v0'][1].id, 'v2') # A points to C
 
+    #------------------------------------------------------------------------------
     def testParseProduction(self):
         # production -> graph '==>' graph
 
@@ -209,6 +220,7 @@ class TestParser(unittest.TestCase):
         self.assertEquals(len(p.productions[0]._lhs._vertices), 2)
         self.assertEquals(len(p.productions[0]._rhs._vertices), 2)
 
+    #------------------------------------------------------------------------------
     def testParseProductionList(self):
         # production_list -> production ';' production_list | nil
 
@@ -231,6 +243,7 @@ class TestParser(unittest.TestCase):
         p._parseProductionList()
         self.assertEquals(len(p.productions), 2)
 
+    #------------------------------------------------------------------------------
     def testParseStartGraph(self):
         # start_graph -> graph ';'
 
@@ -243,6 +256,7 @@ class TestParser(unittest.TestCase):
         p._parseStartGraph()
         self.assertIsNotNone(p.startGraph)
 
+    #------------------------------------------------------------------------------
     def testParseProductions(self):
         # 'productions' '{' start_graph prod_list '}'
 
@@ -274,30 +288,31 @@ class TestParser(unittest.TestCase):
         self.assertIsNotNone(p.startGraph)
         self.assertEquals(len(p.productions), 1)
 
+    #------------------------------------------------------------------------------
     def testParseVertexID(self):
         p = Parser(Lexer(''))
 
         # No text label raises an error.
-        g = Graph()
+        g = Graph
         t = Token(0, '123')
         self.assertRaises(AttributeError, p._parseVertexID, t, g)
 
         # Only a label - doesn't exist in the graph.
-        g = Graph()
+        g = Graph
         t = Token(0, 'A')
         v = p._parseVertexID(t, g)
         self.assertEqual(v.label, 'A')
         self.assertIsNone(v.number)
 
         # Label and a number - not in the graph.
-        g = Graph()
+        g = Graph
         t = Token(0, 'A1')
         v = p._parseVertexID(t, g)
         self.assertEqual(v.label, 'A')
         self.assertEqual(v.number, '1')
 
         # Only a label - already in the graph.
-        g = Graph()
+        g = Graph
         u = Vertex('v1', 'A')
         g.addVertex(u)
         t = Token(0, 'A')
@@ -305,13 +320,12 @@ class TestParser(unittest.TestCase):
         self.assertEqual(v, u)
 
         # Label and a number - already in the graph.
-        g = Graph()
+        g = Graph
         u = Vertex('v1', 'A', '1')
         g.addVertex(u)
         t = Token(0, 'A1')
         v = p._parseVertexID(t, g)
         self.assertEqual(v, u)
-
 
 if __name__ == '__main__':
     unittest.main()

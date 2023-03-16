@@ -6,18 +6,25 @@ from Production import Production
 from Lexer import Lexer
 from Token import TokenTypes
 from Token import Token
-from YapyGraph.Graph import Graph
-from YapyGraph.Vertex import Vertex
+from YapyGraph import Graph
+from YapyGraph import Vertex
    
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
+#------------------------------------------------------------------------------
+#   ____                          
+#  |  _ \ __ _ _ __ ___  ___ _ __ 
+#  | |_) / _` | '__/ __|/ _ \ '__|
+#  |  __/ (_| | |  \__ \  __/ |   
+#  |_|   \__,_|_|  |___/\___|_|   
+#                             
 class Parser(object):
     """
     Graph productions parser.
     """
 
     #--------------------------------------------------------------------------
-    def __init__(self, lexer):
+    def __init__(self, lexer:Lexer):
         """
         Constructor.
         Inputs: lexer -- instance of the Lexer class
@@ -25,12 +32,12 @@ class Parser(object):
         """
         self.lexer = lexer
         self.lookahead = self.lexer.nextToken() # next token
-        self.config = {} # configuration section of the input
-        self.productions = [] # array of Production objects
-        self.startGraph = None # starting graph
+        self.config = {}                        # configuration section of the input
+        self.productions = []                   # array of Production objects
+        self.startGraph = None                  # starting graph
 
         # As we are parsing a graph, we keep track of the number
-        # of vertices parsed so far.
+        # of vertices parsed so far.                                                             TODO: Why?
         self._numVerticesParsed = 0
          
     #--------------------------------------------------------------------------
@@ -223,7 +230,7 @@ class Parser(object):
         self.startGraph = self._parseGraph()
         self._match(TokenTypes.SEMICOLON)
 
-    #--------------------------------------------------------------------------
+    #---------------------------------------------------------------------gi-----
     def _parseVertexID(self, token, graph):
         """
         Parses the given token (ID) into a text label and optional

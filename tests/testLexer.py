@@ -8,14 +8,17 @@ from Token import TokenTypes
 
 class TestLexer(unittest.TestCase):
 
+    #------------------------------------------------------------------------------
     def testConstructorEmptyInput(self):
         lex = Lexer("")
         self.assertEqual(lex.c, TokenTypes.EOF)
 
+    #------------------------------------------------------------------------------
     def testConstructorNonEmptyInput(self):
         lex = Lexer("hello")
         self.assertEqual(lex.c, 'h')
 
+    #------------------------------------------------------------------------------
     def testConsumeLineEnding(self):
         lex = Lexer("\nhello")
         lex._consume() # consume the newline
@@ -24,28 +27,35 @@ class TestLexer(unittest.TestCase):
         self.assertEqual(lex.p, 1) # p has advanced
         self.assertEqual(lex.c, 'h') # c is the next character
 
+    #------------------------------------------------------------------------------
     def testConsumeNormal(self):
         lex = Lexer('hello')
         lex._consume() # consume the 'h'
+        self.assertEqual(lex.lineNum, 1) # line is the same
         self.assertEqual(lex.charNum, 2) # charNum has increased
         self.assertEqual(lex.p, 1) # p has advanced
         self.assertEqual(lex.c, 'e') # c is the next character
 
+    #------------------------------------------------------------------------------
     def testConsumeNoCharactersLeft(self):
         lex = Lexer('h')
         lex._consume() # consume the 'h'
+        self.assertEqual(lex.lineNum, 1) # line is the same
         self.assertEqual(lex.charNum, 2) # charNum has increased
         self.assertEqual(lex.p, 1) # p has advanced
         self.assertEqual(lex.c, TokenTypes.EOF)
 
+    #------------------------------------------------------------------------------
     def testNextTokenEOF(self):
         t = Lexer('').nextToken()
         self.assertEqual(t.type, TokenTypes.EOF)
 
+    #------------------------------------------------------------------------------
     def testNextTokenInvalidToken(self):
         lex = Lexer('$')
         self.assertRaises(SyntaxError, lex.nextToken)
 
+    #------------------------------------------------------------------------------
     def testNextToken(self):
         # Test all the acceptable tokens.
         lex = Lexer('; , { } -> ==> = 123 configuration productions abc123')
@@ -69,10 +79,9 @@ class TestLexer(unittest.TestCase):
             def
             # comment
         """)
-        self.assertEquals(lex.nextToken().type, TokenTypes.ID)
-        self.assertEquals(lex.nextToken().type, TokenTypes.ID)
-        self.assertEquals(lex.nextToken().type, TokenTypes.EOF)
-
+        self.assertEquals(lex.nextToken().type, TokenTypes.ID)  # "abc" is an ID
+        self.assertEquals(lex.nextToken().type, TokenTypes.ID)  # "def" is an ID
+        self.assertEquals(lex.nextToken().type, TokenTypes.EOF) # nothing left
 
 if __name__ == '__main__':
     unittest.main()
