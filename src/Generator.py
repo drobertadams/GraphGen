@@ -6,7 +6,9 @@ import sys
 
 from Parser import Parser
 from Lexer import Lexer
-from YapyGraph.Vertex import Vertex
+from YapyGraph.src.Vertex import Vertex
+#from YapyGraph.src.Graph import Graph
+#from YapyGraph.src.Vertex import Vertex
 
 class Generator(object):
     """

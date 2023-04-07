@@ -3,10 +3,10 @@ import logging
 import sys
 import unittest
 
-from Generator import Generator
-from YapyGraph.Graph import Graph
-from Production import Production
-from YapyGraph.Vertex import Vertex
+from src.Generator import Generator
+from src.Production import Production
+from YapyGraph.src.Graph import Graph
+from YapyGraph.src.Graph import Vertex
 
 class TestGenerator(unittest.TestCase):
 
@@ -489,4 +489,3 @@ class TestGenerator(unittest.TestCase):
 if __name__ == '__main__':
 	logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 	unittest.main()
-# vim:nowrap

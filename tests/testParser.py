@@ -1,17 +1,18 @@
 import unittest
 
-from Lexer import Lexer
-from Token import Token
-from Token import TokenTypes
-from Parser import Parser
-from YapyGraph import Graph
-from YapyGraph import Vertex
+from src.Lexer import Lexer
+from src.Token import Token
+from src.Token import TokenTypes
+from src.Parser import Parser
+from YapyGraph.src.Graph import Graph
+from YapyGraph.src.Graph import Vertex
 
 #------------------------------------------------------------------------------
 class TestParser(unittest.TestCase):
 
     #------------------------------------------------------------------------------
     def testConstructor(self):
+        # Test that things are set up correctly.
         l = Lexer('')
         p = Parser(l)
         self.assertEqual(p.lexer, l)
@@ -23,11 +24,12 @@ class TestParser(unittest.TestCase):
     #------------------------------------------------------------------------------
     def testConsume(self):
         p = Parser( Lexer('{ }') )
-        p._consume()
+        p._consume()    # This should move past the { to the }.
         self.assertEqual(p.lookahead.type, TokenTypes.RBRACE)
 
     #------------------------------------------------------------------------------
     def testError(self):
+        # Calling _error() raises an exception.
         p = Parser( Lexer("") )
         self.assertRaises(SyntaxError, p._error, 'foo')
 
@@ -42,31 +44,6 @@ class TestParser(unittest.TestCase):
         
         # Not finding a match raises an error.
         self.assertRaises(SyntaxError, p._match, TokenTypes.SEMICOLON)
-
-    #------------------------------------------------------------------------------
-    def testParse(self):
-        # An overall parser sanity check.
-        p = Parser(Lexer("""
-            # Sample Productions File
-
-            configuration {
-                max_states = 10;
-                min_states = foo;
-            }
-
-            productions {
-                A;  # start state
-
-                # Productions
-                A ==> A -> B;
-                A -> B ==> A -> B, A -> C;
-                A -> C ==> C -> A;
-            }
-"""))
-        p.parse()
-        self.assertEquals(len(p.config), 2)
-        self.assertIsNotNone(p.startGraph)
-        self.assertEquals(len(p.productions), 3)
 
     #------------------------------------------------------------------------------
     def testParseConfig(self):
@@ -151,6 +128,44 @@ class TestParser(unittest.TestCase):
         p = Parser(l)
         p._parseConfiguration()
         self.assertEquals(p.config['A'], 'B')
+
+    #------------------------------------------------------------------------------
+    def testParseStartGraph(self):
+        # start_graph -> graph ';'
+
+        # Forgot the ; is an error.
+        p = Parser( Lexer('A->B') )
+        self.assertRaises(SyntaxError, p._parseStartGraph)
+
+        # Valid test.
+        p = Parser( Lexer('A->B;') )
+        p._parseStartGraph()
+        self.assertIsNotNone(p.startGraph)
+
+    #------------------------------------------------------------------------------
+    def testParse(self):
+        # An overall parser sanity check.
+        p = Parser(Lexer("""
+            # Sample Productions File
+
+            configuration {
+                max_states = 10;
+                min_states = foo;
+            }
+
+            productions {
+                A;  # start state
+
+                # Productions
+                A ==> A -> B;
+                A -> B ==> A -> B, A -> C;
+                A -> C ==> C -> A;
+            }
+"""))
+        p.parse()
+        self.assertEquals(len(p.config), 2)
+        self.assertIsNotNone(p.startGraph)
+        self.assertEquals(len(p.productions), 3)
 
     #------------------------------------------------------------------------------
     def testParseEdgeList(self):
@@ -243,19 +258,7 @@ class TestParser(unittest.TestCase):
         p._parseProductionList()
         self.assertEquals(len(p.productions), 2)
 
-    #------------------------------------------------------------------------------
-    def testParseStartGraph(self):
-        # start_graph -> graph ';'
-
-        # Forgot the ; is an error.
-        p = Parser( Lexer('A->B') )
-        self.assertRaises(SyntaxError, p._parseStartGraph)
-
-        # Valid test.
-        p = Parser( Lexer('A->B;') )
-        p._parseStartGraph()
-        self.assertIsNotNone(p.startGraph)
-
+   
     #------------------------------------------------------------------------------
     def testParseProductions(self):
         # 'productions' '{' start_graph prod_list '}'
@@ -293,26 +296,26 @@ class TestParser(unittest.TestCase):
         p = Parser(Lexer(''))
 
         # No text label raises an error.
-        g = Graph
+        g = Graph()
         t = Token(0, '123')
         self.assertRaises(AttributeError, p._parseVertexID, t, g)
 
         # Only a label - doesn't exist in the graph.
-        g = Graph
+        g = Graph()
         t = Token(0, 'A')
         v = p._parseVertexID(t, g)
         self.assertEqual(v.label, 'A')
         self.assertIsNone(v.number)
 
         # Label and a number - not in the graph.
-        g = Graph
+        g = Graph()
         t = Token(0, 'A1')
         v = p._parseVertexID(t, g)
         self.assertEqual(v.label, 'A')
         self.assertEqual(v.number, '1')
 
         # Only a label - already in the graph.
-        g = Graph
+        g = Graph()
         u = Vertex('v1', 'A')
         g.addVertex(u)
         t = Token(0, 'A')
@@ -320,7 +323,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(v, u)
 
         # Label and a number - already in the graph.
-        g = Graph
+        g = Graph()
         u = Vertex('v1', 'A', '1')
         g.addVertex(u)
         t = Token(0, 'A1')

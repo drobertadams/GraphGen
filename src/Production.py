@@ -1,4 +1,4 @@
-from YapyGraph import Graph
+from YapyGraph.src import Graph
 
 #------------------------------------------------------------------------------
 #   ____                _            _   _             

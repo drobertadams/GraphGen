@@ -2,8 +2,6 @@
 
 # Current Progress
 
-- Refactoring Production to remove properties
-- Refactoring Parser and its unit test
 - Refactoring Generator and its unit test
   
 # Overview
@@ -98,6 +96,8 @@ The grammar parser is implemented as a traditional top-down recursive descent pa
 `Generator` is the generation engine. Given a list of `Production` objects, and a starting graph `G`, uses graph isomorphic searching to find an instance of a LHS in `G` and transforms the LHS with the RHS.  The engine continues to randomly apply these transformations until `G` contains a given number of vertices. This assumes that the productions generally increase the number of vertices.
 
 # Unit Tests
+
+`nosetests --with-path=YapyGraph/src tests/FILENAME`
 
 `nosetest tests/FILENAME` to run a test.
 

@@ -6,8 +6,8 @@ from Production import Production
 from Lexer import Lexer
 from Token import TokenTypes
 from Token import Token
-from YapyGraph import Graph
-from YapyGraph import Vertex
+from YapyGraph.src.Graph import Graph
+from YapyGraph.src.Vertex import Vertex
    
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
@@ -56,16 +56,16 @@ class Parser(object):
         self.lookahead = self.lexer.nextToken()
         
     #--------------------------------------------------------------------------
-    def _error(self, str):
+    def _error(self, msg:str):
         """
         Raises an error message about expecting str but found current token
         on the current line number.
         """
         raise SyntaxError("Expecting %s found %s on line %d" % \
-            (str, self.lookahead, self.lexer.lineNum))
+            (msg, self.lookahead, self.lexer.lineNum))
 
     #--------------------------------------------------------------------------
-    def _match(self, tokenType):
+    def _match(self, tokenType:int):
         """
         If the type of the current token type matches the given tokenType,
         advance to the next token, otherwise, raise an error.
@@ -125,7 +125,7 @@ class Parser(object):
         self._match(TokenTypes.RBRACE)
 
     #--------------------------------------------------------------------------
-    def _parseEdgeList(self, graph):
+    def _parseEdgeList(self, graph:Graph):
         """
         edgeList -> ID | ID '->' edgeList
 
@@ -231,22 +231,27 @@ class Parser(object):
         self._match(TokenTypes.SEMICOLON)
 
     #---------------------------------------------------------------------gi-----
-    def _parseVertexID(self, token, graph):
+    def _parseVertexID(self, token:Token, graph:Graph) -> Vertex:
         """
-        Parses the given token (ID) into a text label and optional
+        Parses the given `token` (ID) into a text label and optional
         vertex number (e.g., "A1"). If a vertex with these two data don't 
         exist in the given graph, it is added. Otherwise, the existing 
         vertex from the graph is returned.
         """
+        # Find the vertex label and optional number.
         label = re.match('[A-z]+', token.text).group(0)
         match = re.search('[0-9]+$', token.text)
         number = match.group(0) if match is not None else None
+
+        # Turn the label and number into a "name".
         name = Vertex.makeName(label, number)
-        vertex = graph.findVertex(name)
+
+        # Does the graph already have a vertex with the same name?
+        vertex = graph.hasVertex(name)
         if vertex == None:
-            # graph doesn't contain a vertex with the label.
+            # `graph`` doesn't contain a vertex with the label. Add one.
             vertex = Vertex(
-                'v%d' % graph.numVertices, # vertex id
+                'v%d' % graph.numVertices(), # vertex id
                 label, number
             )
             graph.addVertex(vertex)
