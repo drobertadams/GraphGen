@@ -2,7 +2,15 @@
 
 # Current Progress
 
-- Refactoring Generator and its unit test
+- [ ] generateFromFile
+  - [ ] generate
+    - [x] _findMatchingProductions
+    - [ ] _applyProduction
+      - [ ] _mapRHSToGraph
+      - [ ] _deleteMissingVertices
+      - [ ] _deleteMissingEdges
+      - [ ] _addNewVertices
+      - [ ] _addNewEdges
   
 # Overview
 

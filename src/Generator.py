@@ -6,9 +6,9 @@ import sys
 
 from Parser import Parser
 from Lexer import Lexer
+from Production import Production
 from YapyGraph.src.Vertex import Vertex
-#from YapyGraph.src.Graph import Graph
-#from YapyGraph.src.Vertex import Vertex
+from YapyGraph.src.Graph import Graph
 
 class Generator(object):
     """
@@ -21,13 +21,13 @@ class Generator(object):
     increase the number of vertices.
 
     Usage: Either use the all-inclusive main() method which checks the 
-    command-line arguments, or call applyProductions() yourself which
+    command-line arguments, or call generate() which
     takes a starting graph, list of productions, and a dictionary of
     configuration options.
     """
 
     #--------------------------------------------------------------------------
-    def applyProductions(self, startGraph, productions, config):
+    def generate(self, startGraph:Graph, productions:list, config:dict):
         """
         Randomly applies a Production from the given list of Productions to the
         specified starting graph until the graph contains at least the number
@@ -49,12 +49,14 @@ class Generator(object):
             if len(matchingProductions) == 0:
                 raise RuntimeError('No productions match the given graph.')
 
+            # Choose one of the matching productions at random.
             (prod, mapping) = random.choice(matchingProductions)
 
+            # Apply the chosen production.
             self._applyProduction(startGraph, prod, mapping)
 
     #--------------------------------------------------------------------------
-    def generateFromFile(self, filename):
+    def generateFromFile(self, filename:str) -> Graph:
         """
         Opens the given grammar file, parses it, then applies its productions
         to its start graph.
@@ -62,11 +64,11 @@ class Generator(object):
         Outputs: resulting graph
         """
         grammarFile = open(filename, 'r')
-        f = self._parseGrammarFile(grammarFile.read())
+        parser = self._parseGrammarFile(grammarFile.read())
         grammarFile.close()
 
-        self.applyProductions(f.startGraph, f.productions, f.config)
-        return f.startGraph
+        self.generate(parser.startGraph, parser.productions, parser.config)
+        return parser.startGraph
 
     #--------------------------------------------------------------------------
     # PRIVATE METHODS - These aren't the methods you're looking for.
@@ -205,7 +207,7 @@ class Generator(object):
                 graph.deleteVertex(graphVertexID)
 
     #--------------------------------------------------------------------------
-    def _findMatchingProductions(self, graph, productions):
+    def _findMatchingProductions(self, graph:Graph, productions:list) -> list:
         """
         Finds all the productions whose LHS graph can be found in graph. A
         production LHS matches if the text-only labels (e.g., "A") and the
@@ -220,16 +222,16 @@ class Generator(object):
         logging.debug('In _findMatchingProductions')
         solutions = []
         for prod in productions:
-            logging.debug('Checking production LHS %s ' % prod.lhs)
+            logging.debug('Checking production LHS %s ' % prod.lhs())
 
-            # Find all places where prod.lhs can be found in graph.
-            listOfMatches = graph.search(prod.lhs)
+            # Find all places where prod.lhs can be found in the graph.
+            listOfMatches = graph.search(prod.lhs())
             if len(listOfMatches) > 0:
                 for match in listOfMatches:
                     solutions.append( (prod, match) )
-                    logging.debug('Production %s matches' % prod.lhs)
+                    logging.debug('Production %s matches' % prod.lhs())
             else:
-                    logging.debug('Production %s does not match' % prod.lhs)
+                    logging.debug('Production %s does not match' % prod.lhs())
         logging.debug('Out _findMatchingProductions')
         return solutions
 
@@ -252,14 +254,14 @@ class Generator(object):
         """
         rhsMapping = {}
 
-        for rhsVertex in production.rhs.vertices:
+        for rhsVertex in production.rhs.vertices():
             if rhsVertex.name in production.lhs.names:
                 lhsVertex = production.lhs.findVertex(rhsVertex.name)
                 rhsMapping[rhsVertex.id] = lhsMapping[lhsVertex.id] 
         return rhsMapping
 
     #--------------------------------------------------------------------------
-    def _parseGrammarFile(self, grammarFile):
+    def _parseGrammarFile(self, grammarFile:str) -> Parser:
         """
         Parses the given grammar file contents, returning the parser.
         Inputs: grammarFile - string contents of a graph grammar file
@@ -277,5 +279,3 @@ if __name__ == '__main__':
         sys.exit(1)
     e = Generator()
     e.generateFromFile(sys.argv[1])
-
-# vim:nowrap
